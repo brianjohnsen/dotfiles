@@ -15,6 +15,8 @@ export LC_ALL=da_DK.UTF-8
 ## Removes (ugly!) clock char from bash-it theme
 export THEME_SHOW_CLOCK_CHAR=false
 
+PROMPT_COMMAND='echo -en "\033]0; $(pwd) \a"'
+
 
 ## Enables dual network at SKAT (WiFi must be at the top!)
 function ccta() {
