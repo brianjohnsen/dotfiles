@@ -18,6 +18,17 @@ export THEME_SHOW_CLOCK_CHAR=false
 PROMPT_COMMAND='echo -en "\033]0; $(pwd) \a"'
 
 
+## clones a git repo and cd into the folder
+gitCloneCd() {
+    PARAMS=$@
+    A=${PARAMS%.*}
+    B=${A##*/}
+
+    git clone ${PARAMS} && cd "${B}"
+}
+
+
+
 ## Enables dual network at SKAT (WiFi must be at the top!)
 function ccta() {
     sudo route -n delete 192.168.146.0 10.3.0.1 -netmask 255.255.255.0

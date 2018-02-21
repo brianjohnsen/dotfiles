@@ -8,8 +8,8 @@ alias rente='cd ~/PROJEKTER/SKAT/RENTE/rente'
 alias ren='rente'
 
 ## Gradle
-alias gwcc='./gradlew clean check'
-alias gwct='./gradlew clean test integrationTest'
+alias gwcc='mountebank && ./gradlew clean check'
+alias gwct='mountebank && ./gradlew clean test integrationTest'
 alias gwcodenarc='./gradlew codenarcMain codenarcTest codenarcIntegrationTest'
 alias gw='./gradlew'
 alias cleanPostgres='docker stop postgres && sudo rm -rf /tmp/postgres_data/ && docker start postgres'
@@ -34,12 +34,14 @@ alias opencobertura='xdg-open build/reports/cobertura/index.html &> /dev/null'
 
 alias runcheck='docker start mountebank && runCodenarcCleanCheckExitIfFailure'
 alias runtest='docker start mountebank && runCleanTest'
+alias mountebank='docker start mountebank'
 
 ## GIT
 alias pull="git pull && git submodule update --init --recursive ; alert"
 alias push="git push ; alert"
 alias st="git st"
 alias gg="git graph"
+alias gclonecd="gitCloneCd"
 
 ## SKAT
 alias skattunnel='ssh -N -L 127.0.0.1:7011:sktdemo01esb01:7011 -L 127.0.0.1:7013:sktdemo01esb01:7013 admin@sktdemo01jmp01.ccta.dk'
