@@ -8,7 +8,7 @@ export GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -
 
 # Switch between multiple java versions -> http://askubuntu.com/a/845300
 # HACK!
-export JAVA_HOME="$(jrunscript -e 'java.lang.System.out.println(java.lang.System.getProperty("java.home").substring(0,java.lang.System.getProperty("java.home").length()-4));')"
+#export JAVA_HOME="$(jrunscript -e 'java.lang.System.out.println(java.lang.System.getProperty("java.home").substring(0,java.lang.System.getProperty("java.home").length()-4));')"
 
 export LC_ALL=da_DK.UTF-8
 
