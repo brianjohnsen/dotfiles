@@ -40,6 +40,8 @@ alias mountebank='docker start mountebank'
 alias pull="git pull && git submodule update --init --recursive ; alert"
 alias push="git push ; alert"
 alias st="git st"
+alias gl="git log"
+alias gcm="git co -"
 alias gg="git graph"
 alias gclonecd="gitCloneCd"
 
