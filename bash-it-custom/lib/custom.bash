@@ -28,6 +28,11 @@ gitCloneCd() {
 }
 
 
+openFile() {
+    xdg-open $@ &> /dev/null
+}
+
+
 
 ## Enables dual network at SKAT (WiFi must be at the top!)
 function ccta() {

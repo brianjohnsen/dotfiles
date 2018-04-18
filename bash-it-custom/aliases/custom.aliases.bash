@@ -36,6 +36,8 @@ alias runcheck='docker start mountebank && runCodenarcCleanCheckExitIfFailure'
 alias runtest='docker start mountebank && runCleanTest'
 alias mountebank='docker start mountebank'
 
+alias open='openFile'
+
 ## GIT
 alias pull="git pull && git submodule update --init --recursive ; alert"
 alias push="git push ; alert"
