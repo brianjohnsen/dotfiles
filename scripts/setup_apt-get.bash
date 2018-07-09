@@ -74,6 +74,9 @@ sudo apt-get install -y chrome-gnome-shell
 sudo apt install -y postgresql-client-common
 sudo apt install -y postgresql-client8
 
+# Cisco VPN
+sudo apt install -y network-manager-openconnect-gnome network-manager-openconnect openconnect vpnc openvpn vpnc-scripts
+
 ########################################################################################################################
 ## Apps that need atttention
 ########################################################################################################################
