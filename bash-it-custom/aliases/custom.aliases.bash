@@ -49,10 +49,12 @@ alias gclonecd="gitCloneCd"
 
 ## SKAT
 alias skattunnel='ssh -N -L 127.0.0.1:7011:sktdemo01esb01:7011 -L 127.0.0.1:7013:sktdemo01esb01:7013 admin@sktdemo01jmp01.ccta.dk'
+alias skatroutes='sudo ip route add 172.24.0.0/16 dev enx000ec6f9fd68 via 10.3.0.1  && sudo ip route add 172.23.0.0/16 dev enx000ec6f9fd68 via 10.3.0.1 && sudo ip route add 172.20.0.0/16 dev enx000ec6f9fd68 via 10.3.0.1'
 alias skatdualnetwork='ccta'
 alias vpnup='nmcli con up id SKAT'
 alias vpndown='nmcli con down id SKAT'
 
+alias killcitrixbox='sudo kill $(sudo lsof -t -i:2222)'
 alias citrixbox='z citrix && vagrant up && vagrant ssh -- -X firefox -no-remote' #relies on fasd
 
 # sublime text
