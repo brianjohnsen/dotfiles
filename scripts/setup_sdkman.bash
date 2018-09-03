@@ -2,13 +2,28 @@
 
 source ~/.bashrc
 
+echo "Installing sdkman..."
+
+# Check for SDKMAN and install if not present
+if [ ! $SDKMAN_VERSION ]; then
+    curl -s "https://get.sdkman.io" | bash
+fi
+
+
 echo "Setting up sdkman..."
-
-yes | sdk install grails
+yes | sdk install grails 1.3.7
+yes | sdk install grails 2.2.4
 yes | sdk install grails 2.5.0
-yes | sdk install groovy
-yes | sdk install gradle
-yes | sdk install maven
+yes | sdk install grails #set as default
+sdk install groovy
+sdk install gradle
+sdk install maven
 
 
-# HUSK: https://github.com/sdkman/sdkman-extensions
+# Switch extension: https://github.com/sdkman/sdkman-extensions
+echo "Installing sdkman switch extension..."
+git clone git@github.com:sdkman/sdkman-extensions.git
+cd sdkman-extensions
+gradle install
+cd ..
+rm -rf sdkman-extensions

@@ -15,11 +15,6 @@ chmod -v 700 ~/.ssh
 chmod -v 600 ~/.ssh/id_rsa
 
 
-# Check for SDKMAN and install if not present
-if [ ! $SDKMAN_VERSION ]; then
-    curl -s "https://get.sdkman.io" | bash
-fi
-
 # Check for Bash-It and install if not present
 if [ ! $BASH_IT ]; then
     git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
@@ -45,8 +40,8 @@ source scripts/setup_sdkman.bash
 # Install custom scripts
 source scripts/setup_scripts.bash
 
-# Run Dell XPS custom stuff
-source scripts/setup_dell_xps.bash
+## Run Dell XPS custom stuff
+#source scripts/setup_dell_xps.bash
 
 ##########################################################################################
 ## Backup:
