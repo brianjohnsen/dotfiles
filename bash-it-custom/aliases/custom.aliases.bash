@@ -8,8 +8,8 @@ alias rente='cd ~/PROJEKTER/SKAT/RENTE/rente'
 alias ren='rente'
 
 ## Gradle
-alias gwcc='mountebank && ./gradlew clean check'
-alias gwct='mountebank && ./gradlew clean test integrationTest'
+alias gwcc='./gradlew clean check'
+alias gwct='./gradlew clean test integrationTest'
 alias gwcodenarc='./gradlew codenarcMain codenarcTest codenarcIntegrationTest'
 alias gw='./gradlew'
 alias cleanPostgres='docker stop postgres && sudo rm -rf /tmp/postgres_data/ && docker start postgres'
@@ -32,9 +32,8 @@ alias copyBashItCustom='cp -v ~/.dotfiles/bash-it-custom/aliases/custom.aliases.
 alias opentestreport='xdg-open build/reports/tests/index.html &> /dev/null'
 alias opencobertura='xdg-open build/reports/cobertura/index.html &> /dev/null'
 
-alias runcheck='docker start mountebank && runCodenarcCleanCheckExitIfFailure'
-alias runtest='docker start mountebank && runCleanTest'
-alias mountebank='docker start mountebank'
+alias runcheck='runCodenarcCleanCheckExitIfFailure'
+alias runtest='runCleanTest'
 
 alias open='openFile'
 
