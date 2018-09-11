@@ -41,6 +41,9 @@ source scripts/setup_scripts.bash
 # Add custom keybindings
 source scripts/setup_os_customization.bash
 
+# Fix acpi-osi
+source scripts/fix-acpi-osi.bash
+
 ## Run Dell XPS custom stuff
 #source scripts/setup_dell_xps.bash
 

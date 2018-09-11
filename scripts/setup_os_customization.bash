@@ -43,9 +43,7 @@ done;
 echo "Done setting up custom keybndings"
 
 
-
 gsettings set com.canonical.indicator.session show-real-name-on-panel true
-
 
 
 #EKSTRA:
