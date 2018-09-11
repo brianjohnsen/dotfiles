@@ -6,14 +6,15 @@
 #export GRAILS_OPTS="-Xmx2G -Xms512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8"
 export GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8"
 
-# Switch between multiple java versions -> http://askubuntu.com/a/845300
-# HACK!
-#export JAVA_HOME="$(jrunscript -e 'java.lang.System.out.println(java.lang.System.getProperty("java.home").substring(0,java.lang.System.getProperty("java.home").length()-4));')"
-
 export LC_ALL=da_DK.UTF-8
 
 ## Removes (ugly!) clock char from bash-it theme
 export THEME_SHOW_CLOCK_CHAR=false
+
+# Fixes ugly dir color in gnome terminal
+## See: https://askubuntu.com/questions/881949/ugly-color-for-directories-in-gnome-terminal
+LS_COLORS=$LS_COLORS:'ow=1;34:tw=1;34:' ; export LS_COLORS
+
 
 PROMPT_COMMAND='echo -en "\033]0; $(pwd) \a"'
 
