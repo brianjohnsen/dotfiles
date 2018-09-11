@@ -14,5 +14,8 @@ sudo snap install spotify
 # IntelliJ
 sudo snap install intellij-idea-ultimate
 
+# GitKraken
+sudo snap install gitkraken
+
 
 echo "Done installing snaps!"
