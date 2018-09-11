@@ -5,14 +5,17 @@ echo "Installing snaps..."
 # Install: http://tldr.sh/
 sudo snap install tldr
 
+# Sublime Text
+sudo snap install sublime-text --classic
+
 # Slack
-sudo snap install slack
+sudo snap install slack --classic
 
 # Spotify
 sudo snap install spotify
 
 # IntelliJ
-sudo snap install intellij-idea-ultimate
+sudo snap install intellij-idea-ultimate --classic
 
 # GitKraken
 sudo snap install gitkraken
