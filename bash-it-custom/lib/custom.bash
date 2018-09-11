@@ -34,12 +34,10 @@ openFile() {
 
 
 openSkatVpn() {
-    username="XXX"
-    password="YYY"
     url="webvpn.skat.dk"
     group="DevOPS-ext"
-    copyq add $password #add to clipboard
-    sudo openconnect --usergroup=$group --user=$username $url
+    copyq add $SKAT_PASSWORD #add to clipboard
+    sudo openconnect --usergroup=$group --user=$SKAT_WNUMMER $url
 }
 
 
