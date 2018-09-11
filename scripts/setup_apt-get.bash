@@ -67,6 +67,12 @@ sudo apt install -y ranger
 # https://extensions.gnome.org/
 sudo apt-get install -y chrome-gnome-shell
 
+# Node and NPM
+## See: https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-18-04
+sudo apt install -y nodejs
+sudo apt install -y npm
+
+
 # Database
 sudo apt install -y postgresql-client-common
 sudo apt install -y postgresql-client8
@@ -85,11 +91,10 @@ sudo apt install -y apt-transport-https ca-certificates curl software-properties
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
 sudo apt update
-sudo apt install docker-ce
+sudo apt install -y docker-ce
 
-# VirtualBox
+# VirtualBox (required by vagrant)
 sudo apt install -y virtualbox virtualbox-ext-pack
-
 # Vagrant
 sudo apt install -y vagrant
 
