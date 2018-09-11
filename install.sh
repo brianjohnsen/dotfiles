@@ -28,8 +28,6 @@ source scripts/setup_apt-get.bash
 # Insatll non apt binaries
 source scripts/setup_other_apps.bash
 
-# Add custom keybindings
-source scripts/setup_os_customization.bash
 
 # Enable stuff in bash-it
 source scripts/setup_bash-it.bash
@@ -39,6 +37,9 @@ source scripts/setup_sdkman.bash
 
 # Install custom scripts
 source scripts/setup_scripts.bash
+
+# Add custom keybindings
+source scripts/setup_os_customization.bash
 
 ## Run Dell XPS custom stuff
 #source scripts/setup_dell_xps.bash

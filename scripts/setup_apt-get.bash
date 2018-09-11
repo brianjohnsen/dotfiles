@@ -87,18 +87,6 @@ sudo apt install -y network-manager-openconnect-gnome network-manager-openconnec
 ## Apps that need atttention
 ########################################################################################################################
 
-# Java
-sudo add-apt-repository -y ppa:webupd8team/java
-sudo apt-get update
-echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-sudo apt-get install -y oracle-java7-installer
-sudo apt-get install -y oracle-java8-installer
-# Java Cryptography Extension
-sudo apt install -y oracle-java7-unlimited-jce-policy
-sudo apt install -y oracle-java8-unlimited-jce-policy
-
-
 # MySQL
 if [ -f ! /etc/init.d/mysql* ]; then
     sudo apt-get install -y mysql-server

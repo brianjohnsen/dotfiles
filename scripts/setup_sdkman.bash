@@ -11,6 +11,12 @@ fi
 
 
 echo "Setting up sdkman..."
+
+# Java
+sdk install java 7u141-zulu
+yes | sdk install java
+
+# Other tools
 yes | sdk install grails 1.3.7
 yes | sdk install grails 2.2.4
 yes | sdk install grails 2.5.0
