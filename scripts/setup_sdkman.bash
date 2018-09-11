@@ -13,7 +13,7 @@ fi
 echo "Setting up sdkman..."
 
 # Java
-sdk install java 7u141-zulu
+#sdk install java 7-something
 yes | sdk install java
 
 # Other tools

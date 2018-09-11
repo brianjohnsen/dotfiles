@@ -25,9 +25,11 @@ fi
 # Install apt binaries
 source scripts/setup_apt-get.bash
 
-# Insatll non apt binaries
+# Install non apt binaries
 source scripts/setup_other_apps.bash
 
+# Install snap
+source scripts/setup_snap.bash
 
 # Enable stuff in bash-it
 source scripts/setup_bash-it.bash
