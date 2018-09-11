@@ -33,6 +33,15 @@ openFile() {
 }
 
 
+openSkatVpn() {
+    username="XXX"
+    password="YYY"
+    url="webvpn.skat.dk"
+    group="DevOPS-ext"
+    copyq add $password #add to clipboard
+    sudo openconnect --usergroup=$group --user=$username $url
+}
+
 
 ## Enables dual network at SKAT (WiFi must be at the top!)
 function ccta() {

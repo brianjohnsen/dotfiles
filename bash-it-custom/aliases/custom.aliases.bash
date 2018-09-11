@@ -36,6 +36,7 @@ alias runcheck='runCodenarcCleanCheckExitIfFailure'
 alias runtest='runCleanTest'
 
 alias open='openFile'
+alias openVpn='openSkatVpn'
 
 ## GIT
 alias pull="git pull && git submodule update --init --recursive ; alert"
