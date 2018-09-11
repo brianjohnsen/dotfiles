@@ -21,9 +21,9 @@ alias grun='sdk switch && grails -reloading run-app --non-interactive'
 alias gcta='sdk switch && clear && grails clean-all && grails compile && grails test-app'
 #alias opentests='open target/test-reports/html/index.html'
 
-## JAVA
-alias useJava8='yes | sudo apt-get install oracle-java8-set-default && source ~/.bashrc'
-alias useJava7='yes | sudo apt-get install oracle-java7-set-default && source ~/.bashrc'
+# Dell specific
+alias dellServiceTag='sudo dmidecode -s system-serial-number'
+alias dellModelNumber='sudo dmidecode -s system-product-name'
 
 ## Bash-It
 alias copyBashItCustom='cp -v ~/.dotfiles/bash-it-custom/aliases/custom.aliases.bash ~/.bash_it/aliases/ && cp -v ~/.dotfiles/bash-it-custom/lib/custom.bash ~/.bash_it/lib/ && source ~/.bashrc'
