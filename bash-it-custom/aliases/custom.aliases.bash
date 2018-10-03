@@ -36,7 +36,7 @@ alias runcheck='runCodenarcCleanCheckExitIfFailure'
 alias runtest='runCleanTest'
 
 alias open='openFile'
-alias openVpn='openSkatVpn'
+alias openVpn='cd ~/.dotfiles/bin && echo -e "\033]2;SKAT VPN\007" && ./activate-vpn.sh'
 
 ## GIT
 alias pull="git pull && git submodule update --init --recursive ; alert"
@@ -53,6 +53,8 @@ alias skatroutes='sudo ip route add 172.24.0.0/16 dev enx000ec6f9fd68 via 10.3.0
 alias skatdualnetwork='ccta'
 alias vpnup='nmcli con up id SKAT'
 alias vpndown='nmcli con down id SKAT'
+
+alias killfrontend='sudo kill $(sudo lsof -t -i:4200)'
 
 alias killcitrixbox='sudo kill $(sudo lsof -t -i:2222)'
 alias citrixbox='z citrix && vagrant up && vagrant ssh -- -X firefox -no-remote' #relies on fasd
