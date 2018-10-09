@@ -19,10 +19,9 @@ sudo apt-get update
 sudo apt-get install -y google-chrome-stable
 
 
-sudo add-apt-repository ppa:aacebedo/fasd
-sudo apt-get update
 sudo apt-get install -y fasd
 
+sudo apt install p7zip-full
 
 sudo add-apt-repository -y ppa:hluk/copyq
 sudo apt-get update
