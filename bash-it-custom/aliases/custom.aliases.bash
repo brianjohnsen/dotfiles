@@ -20,6 +20,7 @@ alias gta='sdk switch && grails test-app -echoOut --non-interactive'
 alias grun='sdk switch && grails -reloading run-app --non-interactive'
 alias gcta='sdk switch && clear && grails clean-all && grails compile && grails test-app'
 #alias opentests='open target/test-reports/html/index.html'
+alias formueportalenEnvironment='export GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8" && sdk use grails 2.2.4 && sdk use java 7.0.191-zulu'
 
 # Dell specific
 alias dellServiceTag='sudo dmidecode -s system-serial-number'

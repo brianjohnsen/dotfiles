@@ -29,6 +29,8 @@ sudo apt install -y copyq
 
 sudo apt install -y xclip
 
+sudo apt install -y expect
+
 sudo apt install -y solaar
 
 sudo apt install -y nautilus-dropbox
