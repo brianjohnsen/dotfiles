@@ -8,10 +8,13 @@ alias rente='cd ~/PROJEKTER/SKAT/RENTE/rente'
 alias ren='rente'
 
 ## Gradle
+alias gw='./gradlew'
+alias gwc='./gradlew clean'
+alias gwb='./gradlew bootRun'
+alias gwcb='./gradlew clean bootRun'
 alias gwcc='./gradlew clean check'
 alias gwct='./gradlew clean test integrationTest'
 alias gwcodenarc='./gradlew codenarcMain codenarcTest codenarcIntegrationTest'
-alias gw='./gradlew'
 alias cleanPostgres='docker stop postgres && sudo rm -rf /tmp/postgres_data/ && docker start postgres'
 
 ## GRAILS
