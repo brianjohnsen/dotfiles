@@ -23,7 +23,7 @@ yes | sdk install grails 2.5.0
 yes | sdk install grails #set as default
 sdk install groovy
 sdk install gradle
-sdk install maven
+sdk install micronaut
 
 
 # Switch extension: https://github.com/sdkman/sdkman-extensions

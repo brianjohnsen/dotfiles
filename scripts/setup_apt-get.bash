@@ -41,14 +41,6 @@ sudo apt-get install -y libgconf2-4 libnss3-1d libxss1
 
 sudo apt-get install -y wkhtmltopdf
 
-sudo apt-get install -y bleachbit
-
-# Because: http://askubuntu.com/questions/856659/backup-does-not-work-on-ubuntu-16-10-and-16-04
-sudo apt-get install -y duplicity
-
-# Preview (http://www.omgubuntu.co.uk/2016/09/gnome-sushi-mac-quick-look-nautilus)
-#sudo apt-get install -y gnome-sushi
-
 # http://manpages.ubuntu.com/manpages/trusty/man1/xdotool.1.html
 sudo apt install -y xdotool
 
@@ -68,6 +60,9 @@ sudo apt install -y ranger
 
 # https://extensions.gnome.org/
 sudo apt-get install -y chrome-gnome-shell
+
+# AS LONG AS I'M ON UNITY!
+sudo apt-get install -y unity-tweak-tool
 
 # Node and NPM
 ## See: https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-18-04
@@ -95,10 +90,10 @@ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubun
 sudo apt update
 sudo apt install -y docker-ce
 
-# VirtualBox (required by vagrant)
-sudo apt install -y virtualbox virtualbox-ext-pack
-# Vagrant
-sudo apt install -y vagrant
+## VirtualBox (required by vagrant)
+#sudo apt install -y virtualbox virtualbox-ext-pack
+## Vagrant
+#sudo apt install -y vagrant
 
 
 # MySQL

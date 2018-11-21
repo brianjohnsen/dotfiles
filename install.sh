@@ -25,9 +25,6 @@ fi
 # Install apt binaries
 source scripts/setup_apt-get.bash
 
-# Install non apt binaries
-source scripts/setup_other_apps.bash
-
 # Install snap
 source scripts/setup_snap.bash
 
@@ -37,14 +34,17 @@ source scripts/setup_bash-it.bash
 # Install sdkman stuff
 source scripts/setup_sdkman.bash
 
-# Install custom scripts
-source scripts/setup_scripts.bash
+# Install git-open
+source scripts/setup_git-open.bash
 
 # Add custom keybindings
 source scripts/setup_os_customization.bash
 
-# Fix acpi-osi
-source scripts/fix-acpi-osi.bash
+# Install non apt binaries (LASTPASS)
+source scripts/setup_other_apps.bash
+
+## Fix acpi-osi
+#source scripts/fix-acpi-osi.bash
 
 ## Run Dell XPS custom stuff
 #source scripts/setup_dell_xps.bash
