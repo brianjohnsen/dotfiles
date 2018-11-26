@@ -20,5 +20,11 @@ sudo snap install intellij-idea-ultimate --classic
 # GitKraken
 sudo snap install gitkraken
 
+# Opera
+sudo snap install opera
+
+# Firefox
+sudo snap install firefox
+
 
 echo "Done installing snaps!"

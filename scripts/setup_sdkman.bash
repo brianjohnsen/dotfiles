@@ -13,8 +13,8 @@ fi
 echo "Setting up sdkman..."
 
 # Java
-#sdk install java 7-something
-yes | sdk install java
+sdk install java 7.0.201-zulu
+yes | sdk install java 8.0.191-oracle
 
 # Other tools
 yes | sdk install grails 1.3.7
