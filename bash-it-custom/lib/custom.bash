@@ -16,6 +16,10 @@ export THEME_SHOW_CLOCK_CHAR=false
 LS_COLORS=$LS_COLORS:'ow=1;34:tw=1;34:' ; export LS_COLORS
 
 
+export HISTSIZE=10000
+export HISEFILESIZE=10000
+
+
 PROMPT_COMMAND='echo -en "\033]0; $(pwd) \a"'
 
 
