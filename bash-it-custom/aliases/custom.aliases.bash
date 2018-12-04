@@ -40,7 +40,6 @@ alias runcheck='runCodenarcCleanCheckExitIfFailure'
 alias runtest='runCleanTest'
 
 alias open='openFile'
-alias openVpn='cd ~/.dotfiles/bin && echo -e "\033]2;SKAT VPN\007" && ./activate-vpn.sh'
 
 ## GIT
 alias pull="git pull && git submodule update --init --recursive ; alert"
@@ -55,8 +54,10 @@ alias gclonecd="gitCloneCd"
 alias skattunnel='ssh -N -L 127.0.0.1:7011:sktdemo01esb01:7011 -L 127.0.0.1:7013:sktdemo01esb01:7013 admin@sktdemo01jmp01.ccta.dk'
 alias skatroutes='sudo ip route add 172.24.0.0/16 dev enx000ec6f9fd68 via 10.3.0.1  && sudo ip route add 172.23.0.0/16 dev enx000ec6f9fd68 via 10.3.0.1 && sudo ip route add 172.20.0.0/16 dev enx000ec6f9fd68 via 10.3.0.1'
 alias skatdualnetwork='ccta'
-alias vpnup='nmcli con up id SKAT'
-alias vpndown='nmcli con down id SKAT'
+#alias vpnup='nmcli con up id SKAT'
+#alias vpndown='nmcli con down id SKAT'
+alias vpnup='openVpn'
+alias openVpn='cd ~/.dotfiles/bin && echo -e "\033]2;SKAT VPN\007" && ./activate-vpn.sh'
 
 alias killfrontend='sudo kill $(sudo lsof -t -i:4200)'
 
@@ -71,6 +72,10 @@ alias path='echo -e ${PATH//:/\\n}'
 
 # From: http://askubuntu.com/questions/409611/desktop-notification-when-long-running-commands-complete
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# Wifi on/off
+alias wifioff='nmcli radio wifi off'
+alias wifion='nmcli radio wifi on'
 
 
 ########################################################################################################################
