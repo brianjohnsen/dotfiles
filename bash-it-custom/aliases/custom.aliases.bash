@@ -49,6 +49,10 @@ alias gl="git log"
 alias gcm="git co -"
 alias gg="git graph"
 alias gclonecd="gitCloneCd"
+# https://stackoverflow.com/questions/2517339/how-to-recover-the-file-permissions-to-what-git-thinks-the-file-should-be
+alias gitResetPermissions='git diff -p -R --no-color | grep -E "^(diff|(old|new) mode)" --color=never | git apply'
+
+
 
 ## SKAT
 alias skattunnel='ssh -N -L 127.0.0.1:7011:sktdemo01esb01:7011 -L 127.0.0.1:7013:sktdemo01esb01:7013 admin@sktdemo01jmp01.ccta.dk'
