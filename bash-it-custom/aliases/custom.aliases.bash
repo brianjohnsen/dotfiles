@@ -60,7 +60,7 @@ alias skatroutes='sudo ip route add 172.24.0.0/16 dev enx000ec6f9fd68 via 10.3.0
 alias skatdualnetwork='ccta'
 #alias vpnup='nmcli con up id SKAT'
 #alias vpndown='nmcli con down id SKAT'
-alias vpnup='openVpn'
+alias vu='openVpn'
 alias openVpn='cd ~/.dotfiles/bin && echo -e "\033]2;SKAT VPN\007" && ./activate-vpn.sh'
 
 alias killfrontend='sudo kill $(sudo lsof -t -i:4200)'
@@ -78,8 +78,8 @@ alias path='echo -e ${PATH//:/\\n}'
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Wifi on/off
-alias wifioff='nmcli radio wifi off'
-alias wifion='nmcli radio wifi on'
+alias wd='nmcli radio wifi off'
+alias wu='nmcli radio wifi on'
 
 
 ########################################################################################################################
