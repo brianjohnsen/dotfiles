@@ -68,6 +68,7 @@ function ccta() {
 ##
 function runCodenarcCleanCheckExitIfFailure() {
     success=true
+    ./gradlew clean
     if ! ./gradlew codenarcMain; then
         xdg-open build/reports/codenarc/main.html &> /dev/null
         success=false
