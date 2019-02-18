@@ -4,16 +4,15 @@
 # cp -v ~/.dotfiles/bash-it-custom/aliases/custom.aliases.bash ~/.bash_it/aliases/¡
 
 ## Navigation
-alias rente='cd ~/PROJEKTER/SKAT/RENTE/rente'
-alias ren='rente'
+alias dat='cd ~/PROJEKTER/GUL/dataplatform-api'
 
 ## Gradle
 alias gw='./gradlew'
 alias gwc='./gradlew clean'
 alias gwb='./gradlew bootRun'
 alias gwcb='./gradlew clean bootRun'
-alias gwcc='./gradlew clean check'
-alias gwct='./gradlew clean test integrationTest'
+alias gwcc='./gradlew clean check ; alert'
+alias gwct='./gradlew clean test integrationTest ; alert'
 alias gwcodenarc='./gradlew codenarcMain codenarcTest codenarcIntegrationTest'
 alias cleanPostgres='docker stop postgres && sudo rm -rf /tmp/postgres_data/ && docker start postgres'
 
