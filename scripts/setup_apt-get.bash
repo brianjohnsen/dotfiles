@@ -96,6 +96,9 @@ sudo apt install -y docker-ce
 ## Vagrant
 #sudo apt install -y vagrant
 
+## Ansible (vault used by helm charts)
+sudo apt install -y ansible
+
 
 # MySQL
 ## See: https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-18-04

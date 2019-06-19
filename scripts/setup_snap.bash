@@ -26,5 +26,8 @@ sudo snap install opera
 # Firefox
 sudo snap install firefox
 
+# Postman
+sudo snap install postman
+
 
 echo "Done installing snaps!"
