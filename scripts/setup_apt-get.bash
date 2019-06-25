@@ -48,6 +48,7 @@ sudo apt install -y xdotool
 # Power management
 ## See: https://www.tecmint.com/tlp-increase-and-optimize-linux-battery-life/
 sudo add-apt-repository ppa:linrunner/tlp
+sudo apt-get update
 sudo apt install -y tlp tlp-rdw
 sudo tlp start
 
@@ -74,6 +75,11 @@ sudo apt install -y npm
 # Database
 sudo apt install -y postgresql-client-common
 sudo apt install -y postgresql-client8
+
+sudo add-apt-repository -y ppa:serge-rider/dbeaver-ce
+sudo apt-get update
+sudo apt-get install -y dbeaver-ce
+
 
 # Cisco VPN
 sudo apt install -y network-manager-openconnect-gnome network-manager-openconnect openconnect vpnc openvpn vpnc-scripts
