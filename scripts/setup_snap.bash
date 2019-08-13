@@ -30,4 +30,8 @@ sudo snap install firefox
 sudo snap install postman
 
 
+# magic-wormhole (https://github.com/warner/magic-wormhole)
+sudo snap install wormhole
+
+
 echo "Done installing snaps!"
