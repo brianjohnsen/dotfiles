@@ -80,6 +80,11 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 # Wifi on/off
 alias wd='nmcli radio wifi off'
 alias wu='nmcli radio wifi on'
+# Wifi network
+alias wifijohnsen='nmcli c up johnsen'
+alias wifikoncern_wifi='nmcli c up koncern-wifi'
+alias wifi_kon_tst_app='nmcli c up kon_tst_app'
+
 
 
 ########################################################################################################################
