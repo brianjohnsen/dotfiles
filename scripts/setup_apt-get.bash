@@ -59,6 +59,7 @@ sudo apt update
 sudo apt install -y veracrypt
 
 sudo apt install -y ranger
+sudo apt install -y caffeine
 
 # https://extensions.gnome.org/
 sudo apt-get install -y chrome-gnome-shell
@@ -93,7 +94,7 @@ sudo apt install -y network-manager-openconnect-gnome network-manager-openconnec
 ## and: https://docs.docker.com/install/linux/docker-ce/ubuntu/#upgrade-docker-after-using-the-convenience-script
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 sudo apt update
 sudo apt install -y docker-ce
 

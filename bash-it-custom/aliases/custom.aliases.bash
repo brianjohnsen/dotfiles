@@ -4,7 +4,7 @@
 # cp -v ~/.dotfiles/bash-it-custom/aliases/custom.aliases.bash ~/.bash_it/aliases/¡
 
 ## Navigation
-alias aaa='cd ~/PROJEKTER/GUL/aarsopgoerelse-api'
+alias kkk='cd ~/PROJEKTER/ERST/kompensationsmodul'
 
 ## Gradle
 alias gw='./gradlew'
