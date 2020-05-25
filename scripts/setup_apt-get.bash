@@ -6,6 +6,12 @@ echo "Updating and upgrading apt-get"
 sudo apt-get -y update
 sudo apt-get -y upgrade
 
+echo "Removing outdated..."
+# Installing newer version via snap
+sudo apt remove -y fwupd
+echo "Done removing!"
+
+
 echo "Installing..."
 
 # latest cURL
