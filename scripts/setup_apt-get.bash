@@ -73,12 +73,6 @@ sudo apt-get install -y chrome-gnome-shell
 # AS LONG AS I'M ON UNITY!
 sudo apt-get install -y unity-tweak-tool
 
-# Node and NPM
-## See: https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-18-04
-sudo apt install -y nodejs
-sudo apt install -y npm
-
-
 # Database
 sudo apt install -y postgresql-client-common
 sudo apt install -y postgresql-client8
