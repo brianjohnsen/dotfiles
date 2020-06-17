@@ -38,26 +38,13 @@ openFile() {
 }
 
 
-openSkatVpn() {
-    url="webvpn.skat.dk"
-    group="DevOPS-ext"
-    echo -e '\033]2;SKAT VPN\007'
-    copyq add $SKAT_PASSWORD #add to clipboard
-    sudo openconnect --usergroup=$group --user=$SKAT_WNUMMER $url
-}
-
-
-## Enables dual network at SKAT (WiFi must be at the top!)
-function ccta() {
-    sudo route -n delete 192.168.146.0 10.3.0.1 -netmask 255.255.255.0
-    sudo route -n delete 172.20.0.0 10.3.0.1 -netmask 255.255.0.0
-    sudo route -n delete 172.23.0.0 10.3.0.1 -netmask 255.255.0.0
-    sudo route -n delete 172.24.0.0 10.3.0.1 -netmask 255.255.0.0
-    sudo route -n add 192.168.146.0 10.3.0.1 -netmask 255.255.255.0
-    sudo route -n add 172.20.0.0 10.3.0.1 -netmask 255.255.0.0
-    sudo route -n add 172.23.0.0 10.3.0.1 -netmask 255.255.0.0
-    sudo route -n add 172.24.0.0 10.3.0.1 -netmask 255.255.0.0
-}
+#openSkatVpn() {
+#    url="webvpn.skat.dk"
+#    group="DevOPS-ext"
+#    echo -e '\033]2;SKAT VPN\007'
+#    copyq add $SKAT_PASSWORD #add to clipboard
+#    sudo openconnect --usergroup=$group --user=$SKAT_WNUMMER $url
+#}
 
 
 ##

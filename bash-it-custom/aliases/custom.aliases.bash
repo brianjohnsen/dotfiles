@@ -16,7 +16,6 @@ alias gwcc='./gradlew clean check ; alert'
 alias gwccc='./gradlew clean check -DENABLE_CLOVER=true; alert'
 alias gwct='./gradlew clean test integrationTest ; alert'
 alias gwcodenarc='./gradlew codenarcMain codenarcTest codenarcIntegrationTest'
-alias cleanPostgres='docker stop postgres && sudo rm -rf /tmp/postgres_data/ && docker start postgres'
 
 ## GRAILS
 alias gt='sdk switch && grails -reloading test --non-interactive'
@@ -56,21 +55,6 @@ alias gitResetPermissions='git diff -p -R --no-color | grep -E "^(diff|(old|new)
 alias gitUndoLastCommit="git reset --soft HEAD~1"
 
 
-
-## SKAT
-alias skattunnel='ssh -N -L 127.0.0.1:7011:sktdemo01esb01:7011 -L 127.0.0.1:7013:sktdemo01esb01:7013 admin@sktdemo01jmp01.ccta.dk'
-alias skatroutes='sudo ip route add 172.24.0.0/16 dev enx000ec6f9fd68 via 10.3.0.1  && sudo ip route add 172.23.0.0/16 dev enx000ec6f9fd68 via 10.3.0.1 && sudo ip route add 172.20.0.0/16 dev enx000ec6f9fd68 via 10.3.0.1'
-alias skatdualnetwork='ccta'
-#alias vpnup='nmcli con up id SKAT'
-#alias vpndown='nmcli con down id SKAT'
-alias vu='openVpn'
-alias openVpn='cd ~/.dotfiles/bin && echo -e "\033]2;SKAT VPN\007" && ./activate-vpn.sh'
-
-alias killfrontend='sudo kill $(sudo lsof -t -i:4200)'
-
-alias killcitrixbox='sudo kill $(sudo lsof -t -i:2222)'
-alias citrixbox='z citrix && vagrant up && vagrant ssh -- -X firefox -no-remote' #relies on fasd
-
 # sublime text
 alias s='subl'
 
@@ -85,9 +69,6 @@ alias wd='nmcli radio wifi off'
 alias wu='nmcli radio wifi on'
 # Wifi network
 alias wifijohnsen='nmcli c up johnsen'
-alias wifikoncern_wifi='nmcli c up koncern-wifi'
-alias wifi_kon_tst_app='nmcli c up kon_tst_app'
-
 
 
 ########################################################################################################################
