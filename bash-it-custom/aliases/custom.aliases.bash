@@ -6,6 +6,10 @@
 ## Navigation
 alias kkk='cd ~/PROJEKTER/ERST/kompensationsmodul'
 
+## System
+alias updateAll='sudo apt -y update && sudo apt -y upgrade && sudo apt -y autoremove'
+
+
 ## Gradle
 alias gw='./gradlew'
 alias gwc='./gradlew clean'
