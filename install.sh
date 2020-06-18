@@ -40,6 +40,9 @@ source scripts/setup_git-open.bash
 # Add custom keybindings
 source scripts/setup_os_customization.bash
 
+# Install scripts
+source scripts/setup_scripts.bash
+
 
 ##########################################################################################
 ## Backup:

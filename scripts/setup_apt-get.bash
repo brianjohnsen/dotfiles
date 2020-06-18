@@ -6,11 +6,16 @@ echo "Updating and upgrading apt-get"
 sudo apt-get -y update
 sudo apt-get -y upgrade
 
-echo "Removing outdated..."
+echo "Removing outdated/unwanted..."
 # Installing newer version via snap
 sudo apt remove -y fwupd
+# Amazon crap
+sudo apt purge -y ubuntu-web-launchers
 echo "Done removing!"
 
+
+echo "Adding Dell repos"
+sudo add-apt-repository -y 'deb http://dell.archive.canonical.com/updates focal-dell public'
 
 echo "Installing..."
 
@@ -19,10 +24,8 @@ sudo apt-get update
 sudo apt-get install -y curl
 
 # Chrome
-#wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-#sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-#sudo apt-get update
-#sudo apt-get install -y google-chrome-stable
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt install -y ./google-chrome-stable_current_amd64.deb
 
 sudo apt install -y httpie
 
@@ -40,7 +43,10 @@ sudo apt install -y expect
 
 sudo apt install -y solaar
 
-sudo apt install -y nautilus-dropbox
+sudo apt install -y ubuntu-restricted-extras
+
+#https://www.linuxbabe.com/ubuntu/install-dropbox-ubuntu-20-04
+#sudo apt install -y nautilus-dropbox
 
 sudo add-apt-repository -y universe
 sudo apt-get update
@@ -64,22 +70,19 @@ sudo add-apt-repository -y ppa:unit193/encryption
 sudo apt update
 sudo apt install -y veracrypt
 
-sudo apt install -y ranger
+#sudo apt install -y ranger
 sudo apt install -y caffeine
 
 # https://extensions.gnome.org/
-sudo apt-get install -y chrome-gnome-shell
+sudo apt install -y chrome-gnome-shell
+sudo apt install gnome-tweaks
 
 # AS LONG AS I'M ON UNITY!
-sudo apt-get install -y unity-tweak-tool
+#sudo apt-get install -y unity-tweak-tool
 
 # Database
-sudo apt install -y postgresql-client-common
-sudo apt install -y postgresql-client8
-
-sudo add-apt-repository -y ppa:serge-rider/dbeaver-ce
-sudo apt-get update
-sudo apt-get install -y dbeaver-ce
+#sudo apt install -y postgresql-client-common
+#sudo apt install -y postgresql-client8
 
 
 # Cisco VPN
@@ -104,7 +107,7 @@ sudo apt install -y docker-ce
 #sudo apt install -y vagrant
 
 ## Ansible (vault used by helm charts)
-sudo apt install -y ansible
+#sudo apt install -y ansible
 
 
 # MySQL

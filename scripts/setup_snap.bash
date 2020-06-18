@@ -29,11 +29,14 @@ sudo snap install firefox
 # Postman
 sudo snap install postman
 
-
 # magic-wormhole (https://github.com/warner/magic-wormhole)
 sudo snap install wormhole
 
-# newer version of firmware update manager (version fra apt is outdated)
+# newer version of firmware update manager (version from apt is outdated)
 sudo snap install fwupd --classic
+
+# DBeaver
+sudo snap install dbeaver-ce
+
 
 echo "Done installing snaps!"

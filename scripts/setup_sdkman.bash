@@ -13,13 +13,14 @@ fi
 echo "Setting up sdkman..."
 
 # Java
-sdk install java 7.0.201-zulu
-yes | sdk install java 8.0.191-oracle
+sdk install java 7.0.262-zulu
+yes | sdk install java 8.0.252-zulu
 
 # Other tools
 yes | sdk install grails 1.3.7
 yes | sdk install grails 2.2.4
 yes | sdk install grails 2.5.0
+yes | sdk install grails 3.3.11
 yes | sdk install grails #set as default
 sdk install groovy
 sdk install gradle
