@@ -7,7 +7,7 @@
 alias kkk='cd ~/PROJEKTER/ERST/kompensationsmodul'
 
 ## System
-alias updateAll='sudo apt -y update && sudo apt -y upgrade && sudo apt -y autoremove'
+alias updateAll='LANG=C sudo apt -y update && LANG=C sudo apt -y upgrade && LANG=C sudo apt -y autoremove'
 
 
 ## Gradle
