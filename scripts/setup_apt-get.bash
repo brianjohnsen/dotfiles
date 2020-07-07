@@ -16,6 +16,7 @@ echo "Done removing!"
 
 echo "Adding Dell repos"
 sudo add-apt-repository -y 'deb http://dell.archive.canonical.com/updates focal-dell public'
+# see: https://medium.com/@nrogap/dell-repository-for-install-additional-drivers-on-ubuntu-4cf061640180
 
 echo "Installing..."
 
@@ -109,10 +110,13 @@ sudo apt install -y docker-ce
 ## Ansible (vault used by helm charts)
 #sudo apt install -y ansible
 
+# Install: http://tldr.sh/
+sudo apt install -y tldr
 
 # MySQL
 ## See: https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-18-04
-if [ -f ! /etc/init.d/mysql* ]; then
+## Also: https://stackoverflow.com/a/52335791
+if [[ -f ! /etc/init.d/mysql* ]]; then
     sudo apt-get install -y mysql-server
     # only run init script first time
     sudo mysql_secure_installation

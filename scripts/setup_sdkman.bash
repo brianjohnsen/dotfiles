@@ -12,6 +12,10 @@ fi
 
 echo "Setting up sdkman..."
 
+####################################
+## Not working!
+####################################
+
 # Java
 sdk install java 7.0.262-zulu
 yes | sdk install java 8.0.252-zulu

@@ -2,9 +2,6 @@
 
 echo "Installing snaps..."
 
-# Install: http://tldr.sh/
-sudo snap install tldr
-
 # Sublime Text
 sudo snap install sublime-text --classic
 
