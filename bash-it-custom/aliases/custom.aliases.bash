@@ -57,6 +57,7 @@ alias gclonecd="gitCloneCd"
 # https://stackoverflow.com/questions/2517339/how-to-recover-the-file-permissions-to-what-git-thinks-the-file-should-be
 alias gitResetPermissions='git diff -p -R --no-color | grep -E "^(diff|(old|new) mode)" --color=never | git apply'
 alias gitUndoLastCommit="git reset --soft HEAD~1"
+alias gitResetCommitDate="git commit --amend --no-edit --date "$(date)""
 
 
 # sublime text
