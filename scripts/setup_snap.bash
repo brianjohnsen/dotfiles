@@ -15,7 +15,7 @@ sudo snap install spotify
 sudo snap install intellij-idea-ultimate --classic
 
 # GitKraken
-sudo snap install gitkraken
+sudo snap install gitkraken --classic
 
 # Opera
 sudo snap install opera
