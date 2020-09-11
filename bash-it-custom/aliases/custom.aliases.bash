@@ -25,10 +25,10 @@ alias gwct='./gradlew clean test integrationTest ; alert'
 alias gwcodenarc='./gradlew codenarcMain codenarcTest codenarcIntegrationTest'
 
 ## GRAILS
-alias gt='grails -reloading test --non-interactive'
-alias gta='grails test-app -echoOut --non-interactive'
-alias grun='grails -reloading run-app --non-interactive'
-alias gcta='clear && grails clean-all && grails compile && grails test-app'
+alias gt='GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8" && grails -reloading test --non-interactive'
+alias gta='GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8" && grails test-app -echoOut --non-interactive'
+alias grun='GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8" && grails -reloading run-app --non-interactive'
+alias gcta='GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8" && clear && grails clean-all && grails compile && grails test-app'
 #alias opentests='open target/test-reports/html/index.html'
 
 # Dell specific
