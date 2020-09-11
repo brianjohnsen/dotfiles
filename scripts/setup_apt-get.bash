@@ -46,6 +46,10 @@ sudo apt install -y solaar
 
 sudo apt install -y ubuntu-restricted-extras
 
+# to mount ERST logs dir
+sudo apt install -y cifs-utils
+
+
 #https://www.linuxbabe.com/ubuntu/install-dropbox-ubuntu-20-04
 #sudo apt install -y nautilus-dropbox
 

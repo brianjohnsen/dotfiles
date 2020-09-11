@@ -9,6 +9,9 @@ alias kkk='cd ~/PROJEKTER/ERST/kompensationsmodul'
 ## System
 alias updateAll='LANG=C sudo apt -y update && LANG=C sudo apt -y upgrade && LANG=C sudo apt -y autoremove'
 
+## ERST
+alias erstMountLogs='cd ~/.dotfiles/bin && bash ./erst_create_logs_mount.sh && cd /media/nc/logs-nine/kompensationsmodul/'
+
 
 ## Gradle
 alias gw='./gradlew'
