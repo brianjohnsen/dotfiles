@@ -5,6 +5,8 @@
 
 ## Navigation
 alias kkk='cd ~/PROJEKTER/ERST/kompensationsmodul'
+alias fp='cd ~/PROJEKTER/GTIT/formueportalen && export GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8"'
+alias formueportalen='fp'
 
 ## System
 alias updateAll='LANG=C sudo apt -y update && LANG=C sudo apt -y upgrade && LANG=C sudo apt -y autoremove'
@@ -25,10 +27,10 @@ alias gwct='./gradlew clean test integrationTest ; alert'
 alias gwcodenarc='./gradlew codenarcMain codenarcTest codenarcIntegrationTest'
 
 ## GRAILS
-alias gt='GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8" && grails -reloading test --non-interactive'
-alias gta='GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8" && grails test-app -echoOut --non-interactive'
-alias grun='GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8" && grails -reloading run-app --non-interactive'
-alias gcta='GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8" && clear && grails clean-all && grails compile && grails test-app'
+alias gt='grails -reloading test --non-interactive'
+alias gta='grails test-app -echoOut --non-interactive'
+alias grun='grails -reloading run-app --non-interactive'
+alias gcta='clear && grails clean-all && grails compile && grails test-app'
 #alias opentests='open target/test-reports/html/index.html'
 
 # Dell specific
