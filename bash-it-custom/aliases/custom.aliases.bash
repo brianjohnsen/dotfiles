@@ -27,9 +27,9 @@ alias gwct='./gradlew clean test integrationTest ; alert'
 alias gwcodenarc='./gradlew codenarcMain codenarcTest codenarcIntegrationTest'
 
 ## GRAILS
-alias gt='grails -reloading test --non-interactive'
-alias gta='grails test-app -echoOut --non-interactive'
-alias grun='grails -reloading run-app --non-interactive'
+alias gt='grails test'
+alias gta='grails test-app -echoOut'
+alias grun='grails run-app'
 alias gcta='clear && grails clean-all && grails compile && grails test-app'
 #alias opentests='open target/test-reports/html/index.html'
 
