@@ -44,6 +44,9 @@ sudo apt install -y expect
 
 sudo apt install -y solaar
 
+# Pulseaudio
+sudo apt install -y pavucontrol
+
 sudo apt install -y ubuntu-restricted-extras
 
 # to mount ERST logs dir
