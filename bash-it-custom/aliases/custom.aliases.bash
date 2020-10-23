@@ -13,6 +13,7 @@ alias updateAll='LANG=C sudo apt -y update && LANG=C sudo apt -y upgrade && LANG
 
 ## ERST
 alias erstMountLogs='cd ~/.dotfiles/bin && bash ./erst_create_logs_mount.sh && cd /media/nc/logs-nine/kompensationsmodul/'
+alias erstCopyProdLogs='cd /media/nc/logs-nine/kompensationsmodul && cat prod-app-p06/kompensationsmodul.log prod-app-p05/kompensationsmodul.log > /tmp/KOMP.log && cd /tmp'
 
 
 ## Gradle
