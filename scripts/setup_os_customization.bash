@@ -30,10 +30,14 @@ gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/or
 gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/ binding "'<Primary><Alt>aring'"
 gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/ command "'/bin/sh /home/johnsen/.dotfiles/bin/reload-chrome-and-stay.sh'"
 
-gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/']"
+gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom7/ name "'Open Cisco VPN'"
+gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom7/ binding "'<Primary><Shift><Alt>ooblique'"
+gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom7/ command "'/bin/sh /home/johnsen/.dotfiles/bin/anyconnect-vpn.sh'"
+
+gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom7/']"
 
 
-for i in `seq 0 6`;
+for i in `seq 0 7`;
 do
   echo "Custom Keybinding $i"
   gsettings get org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom$i/ name
@@ -49,8 +53,3 @@ echo "Done setting up custom keybndings"
 
 gsettings set com.canonical.indicator.session show-real-name-on-panel true
 
-
-#EKSTRA:
-# 1) SET terminal tilbagerulning til 100000 og size til 150x50 (måske som gem/restore profil)
-# 2) http://tipsonubuntu.com/2016/10/24/ubuntu-16-10-auto-shutdown-hibernate-lid-closed/
-# gsettings set org.gnome.settings-daemon.plugins.power button-power 'suspend'
