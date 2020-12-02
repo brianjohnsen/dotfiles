@@ -44,6 +44,8 @@ sudo apt install -y expect
 
 sudo apt install -y solaar
 
+sudo apt install -y tree
+
 # Pulseaudio
 sudo apt install -y pavucontrol
 
