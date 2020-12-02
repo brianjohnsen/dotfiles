@@ -17,6 +17,8 @@ alias erstCopyProdLogs='cd /media/nc/logs-nine/kompensationsmodul && cat prod-ap
 alias erstCopyDevLogs='cd /media/nc/logs-nine/kompensationsmodul && cat dev-app-d06/kompensationsmodul.log dev-app-d05/kompensationsmodul.log > /tmp/KOMPDEV.log && cd /tmp'
 alias erstVpn='cd ~/.dotfiles/bin && bash ./anyconnect-vpn.sh'
 
+## General
+alias ll='ls -lah'
 
 ## Gradle
 alias gw='./gradlew'
@@ -104,4 +106,6 @@ unalias pager
 #unalias pcurl
 unalias pass
 #unalias shuf
+unalias vbrc
+unalias vbpf
 
