@@ -35,5 +35,8 @@ sudo snap install fwupd --classic
 # DBeaver
 sudo snap install dbeaver-ce
 
+# Inkscape (PDF editering)
+sudo snap install inkscape
+
 
 echo "Done installing snaps!"
