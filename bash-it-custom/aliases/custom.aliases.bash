@@ -15,6 +15,7 @@ alias updateAll='LANG=C sudo apt -y update && LANG=C sudo apt -y upgrade && LANG
 alias erstMountLogs='cd ~/.dotfiles/bin && bash ./erst_create_logs_mount.sh && cd /media/nc/logs-nine/kompensationsmodul/'
 alias erstCopyProdLogs='cd /media/nc/logs-nine/kompensationsmodul && cat prod-app-p06/kompensationsmodul.log prod-app-p05/kompensationsmodul.log > /tmp/KOMP.log && cd /tmp'
 alias erstCopyDevLogs='cd /media/nc/logs-nine/kompensationsmodul && cat dev-app-d06/kompensationsmodul.log dev-app-d05/kompensationsmodul.log > /tmp/KOMPDEV.log && cd /tmp'
+alias erstCopyTestLogs='cd /media/nc/logs-nine/kompensationsmodul && cat test-app-t06/kompensationsmodul.log test-app-t05/kompensationsmodul.log > /tmp/KOMPTEST.log && cd /tmp'
 alias erstVpn='cd ~/.dotfiles/bin && bash ./anyconnect-vpn.sh'
 
 ## General
