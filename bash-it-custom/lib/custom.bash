@@ -18,6 +18,8 @@ LS_COLORS=$LS_COLORS:'ow=1;34:tw=1;34:' ; export LS_COLORS
 
 PROMPT_COMMAND='echo -en "\033]0; $(pwd) \a"'
 
+PATH=$PATH:~/.dotfiles/local-bin
+
 
 ## clones a git repo and cd into the folder
 gitCloneCd() {
