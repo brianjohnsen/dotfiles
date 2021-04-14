@@ -68,6 +68,9 @@ alias gclonecd="gitCloneCd"
 alias gitPermissionsReset='git diff -p -R --no-color | grep -E "^(diff|(old|new) mode)" --color=never | git apply'
 alias gitUndoLastCommit="git reset --soft HEAD~1"
 alias gitResetCommitDate='git commit --amend --no-edit --date "$(date)"'
+#GitAhead
+alias ga="ga &> /dev/null &"
+alias gitahead="ga &> /dev/null &"
 
 
 # sublime text
