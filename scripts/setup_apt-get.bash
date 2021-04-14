@@ -99,6 +99,9 @@ sudo apt install gnome-tweaks
 # Cisco VPN
 sudo apt install -y network-manager-openconnect-gnome network-manager-openconnect openconnect vpnc openvpn vpnc-scripts
 
+# removes package to fix sporadic anyconnect disconnects: https://community.cisco.com/t5/vpn/extremely-frustrating-cisco-anyconnect-on-ubuntu-keeps-dropping/m-p/4156880/highlight/true#M274644
+sudo apt-get remove network-manager-config-connectivity-ubuntu
+
 ########################################################################################################################
 ## Apps that (might) need atttention
 ########################################################################################################################
