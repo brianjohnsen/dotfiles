@@ -10,7 +10,7 @@ sleep .5
 xdotool key "Return" &
 sleep .6
 xdotool key "alt+c" &
-sleep 1.2
+sleep 2
 xdotool key type $PASSWORD &
 sleep .7
 xdotool key "Return" &
