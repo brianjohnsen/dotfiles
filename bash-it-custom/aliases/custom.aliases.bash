@@ -16,7 +16,7 @@ alias erstMountLogs='cd ~/.dotfiles/bin && bash ./erst_create_logs_mount.sh && c
 alias erstCopyProdLogs='cd /media/nc/logs-nine/kompensationsmodul && cat prod-app-p06/kompensationsmodul.log prod-app-p05/kompensationsmodul.log > /tmp/KOMP.log && cd /tmp'
 alias erstCopyDevLogs='cd /media/nc/logs-nine/kompensationsmodul && cat dev-app-d06/kompensationsmodul.log dev-app-d05/kompensationsmodul.log > /tmp/KOMPDEV.log && cd /tmp'
 alias erstCopyTestLogs='cd /media/nc/logs-nine/kompensationsmodul && cat test-app-t06/kompensationsmodul.log test-app-t05/kompensationsmodul.log > /tmp/KOMPTEST.log && cd /tmp'
-alias erstVpn='cd ~/.dotfiles/bin && bash ./anyconnect-vpn.sh'
+alias erstVpn='cd ~/.dotfiles/bin && bash ./anyconnect-vpn.sh && cd -'
 
 ## General
 alias ll='ls -lah'
@@ -63,7 +63,6 @@ alias gl="git log"
 alias gcm="git co master"
 alias gc-="git co -"
 alias gg="git graph"
-alias gclonecd="gitCloneCd"
 # https://stackoverflow.com/questions/2517339/how-to-recover-the-file-permissions-to-what-git-thinks-the-file-should-be
 alias gitPermissionsReset='git diff -p -R --no-color | grep -E "^(diff|(old|new) mode)" --color=never | git apply'
 alias gitUndoLastCommit="git reset --soft HEAD~1"
@@ -112,4 +111,3 @@ unalias pass
 #unalias shuf
 unalias vbrc
 unalias vbpf
-
