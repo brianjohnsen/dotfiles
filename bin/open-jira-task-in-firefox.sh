@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-sh -c 'firefox "http://loggen/browse/KOMP-$(xclip -o)"'
+sh -c 'firefox "https://jira.erst.dk/browse/KOMP-$(xclip -o)"'
 
 
 #KOMP-66
