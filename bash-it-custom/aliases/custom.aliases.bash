@@ -5,6 +5,7 @@
 
 ## Navigation
 alias kkk='cd ~/PROJEKTER/ERST/kompensationsmodul'
+alias ddd='cd ~/PROJEKTER/ERST/VIRK/virk-dia'
 alias fp='cd ~/PROJEKTER/GTIT/formueportalen && export GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8"'
 alias formueportalen='fp'
 
@@ -61,6 +62,7 @@ alias push="git push ; alert"
 alias st="git st"
 alias gl="git log"
 alias gcm="git co master"
+alias gcd="git co dev"
 alias gc-="git co -"
 alias gg="git graph"
 # https://stackoverflow.com/questions/2517339/how-to-recover-the-file-permissions-to-what-git-thinks-the-file-should-be
