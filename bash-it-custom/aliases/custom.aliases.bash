@@ -21,17 +21,22 @@ alias erstVpn='cd ~/.dotfiles/bin && bash ./anyconnect-vpn.sh && cd -'
 
 ## General
 alias ll='ls -lah'
+alias open='openFile'
+alias bat='batcat'
 
 ## Gradle
 alias gw='./gradlew'
 alias gwc='./gradlew clean'
 alias gwb='./gradlew bootRun'
 alias gwcb='./gradlew clean bootRun'
-alias gwgeb='./gradlew clean iT --tests "*geb*" -Dgrails.test.ignoreGebTest=false'
 alias gwcc='./gradlew clean check ; alert'
-alias gwccc='./gradlew clean check -DENABLE_CLOVER=true; alert'
+alias gwccc='runCodenarcCleanCheckExitIfFailure'
 alias gwct='./gradlew clean test integrationTest ; alert'
 alias gwcodenarc='./gradlew codenarcMain codenarcTest codenarcIntegrationTest'
+
+alias runcheck='runCodenarcCleanCheckExitIfFailure'
+alias runtest='runCleanTest'
+
 
 ## GRAILS
 alias gt='grails test'
@@ -48,13 +53,10 @@ alias dellModelNumber='sudo dmidecode -s system-product-name'
 alias copyBashItCustom='cp -v ~/.dotfiles/bash-it-custom/aliases/custom.aliases.bash ~/.bash_it/aliases/ && cp -v ~/.dotfiles/bash-it-custom/lib/custom.bash ~/.bash_it/lib/ && source ~/.bashrc'
 
 ## Open reports
-alias opentestreport='xdg-open build/reports/tests/index.html &> /dev/null'
-alias opencobertura='xdg-open build/reports/cobertura/index.html &> /dev/null'
+alias opentestreport='openTestReport'
+#alias opencobertura='xdg-open build/reports/cobertura/index.html &> /dev/null'
+alias openclover='open build/reports/clover/html/index.html'
 
-alias runcheck='runCodenarcCleanCheckExitIfFailure'
-alias runtest='runCleanTest'
-
-alias open='openFile'
 
 ## GIT
 alias pull="git pull && git submodule update --init --recursive ; alert"

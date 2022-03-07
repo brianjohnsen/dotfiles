@@ -90,3 +90,20 @@ function runCleanTest() {
         notify-send 'TEST WAS SUCCESSFUL!'
     fi
 }
+
+##
+# Opens the test report if it exists
+##
+function openTestReport() {
+    UNIT_TEST_REPORT=build/reports/tests/test/index.html
+    INTEGRATION_TEST_REPORT=build/reports/tests/index.html
+    if [ -f "$INTEGRATION_TEST_REPORT" ]; then
+        echo "Opening integration test report..."
+        xdg-open $INTEGRATION_TEST_REPORT &> /dev/null
+    elif [ -f "$UNIT_TEST_REPORT" ]; then
+        echo "Opening unit test report..."
+        xdg-open $UNIT_TEST_REPORT &> /dev/null
+    else
+        echo "No test report found"
+    fi
+}

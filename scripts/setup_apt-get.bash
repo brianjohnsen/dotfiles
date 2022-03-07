@@ -46,6 +46,11 @@ sudo apt install -y solaar
 
 sudo apt install -y tree
 
+sudo apt install -y bat
+
+## install on 20.10+: https://the.exa.website/docs
+#sudo apt install -y exa
+
 # Pulseaudio
 sudo apt install -y pavucontrol
 
@@ -63,7 +68,6 @@ sudo apt-get update
 sudo apt-get install -y libgconf2-4 libnss3-1d libxss1
 
 sudo apt-get install -y wkhtmltopdf
-# lav symlink til den: sudo ln -s /usr/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf
 
 # http://manpages.ubuntu.com/manpages/trusty/man1/xdotool.1.html
 sudo apt install -y xdotool
