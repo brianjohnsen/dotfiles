@@ -107,3 +107,25 @@ function openTestReport() {
         echo "No test report found"
     fi
 }
+
+##
+# bashit gradle-plugin before this commit:  https://github.com/Bash-it/bash-it/commit/7ed12083f26ce95cb9018bf6688fdba2e96514dc
+##
+function gradlewFromParents() {
+  local file="gradlew"
+  local curr_path="${PWD}"
+  local result="gradle"
+
+  # Search recursively upwards for file.
+  until [[ "${curr_path}" == "/" ]]; do
+    if [[ -e "${curr_path}/${file}" ]]; then
+      result="${curr_path}/${file}"
+      break
+    else
+      curr_path=$(dirname "${curr_path}")
+    fi
+  done
+
+  # Call gradle
+  "${result}" $*
+}
