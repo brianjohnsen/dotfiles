@@ -4,8 +4,8 @@
 # cp -v ~/.dotfiles/bash-it-custom/aliases/custom.aliases.bash ~/.bash_it/aliases/¡
 
 ## Navigation
-alias kkk='cd ~/PROJEKTER/ERST/kompensationsmodul'
-alias ddd='cd ~/PROJEKTER/ERST/VIRK/virk-dia'
+alias bfri='befri'
+alias befri='cd ~/PROJEKTER/GTIT/befri'
 alias fp='cd ~/PROJEKTER/GTIT/formueportalen && export GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8"'
 alias formueportalen='fp'
 
