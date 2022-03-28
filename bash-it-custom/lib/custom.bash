@@ -81,6 +81,19 @@ function runCodenarcCleanCheckExitIfFailure() {
     fi
 }
 
+##
+# Gets latest grails app from GRAILS APPLICATION FORGE and opens `build.gradle` and `gradle.properties`.
+##
+function getLatestGrailsAndOpen() {
+    TMPDIR=/tmp/latestgrails
+    rm -r $TMPDIR
+    mkdir $TMPDIR
+    curl https://start.grails.org/project.zip -d profile=rest-api -o $TMPDIR/project.zip
+    unzip -qq $TMPDIR/project.zip -d $TMPDIR
+    xdg-open $TMPDIR/project/build.gradle &> /dev/null
+    xdg-open $TMPDIR/project/gradle.properties &> /dev/null
+}
+
 
 function runCleanTest() {
     if ! ./gradlew clean test integrationTest; then
