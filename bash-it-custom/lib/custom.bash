@@ -53,16 +53,16 @@ openFile() {
 ##
 function runCodenarcCleanCheckExitIfFailure() {
     success=true
-    ./gradlew clean
-    if ! ./gradlew codenarcMain; then
+    gradlewFromParents clean
+    if ! gradlewFromParents codenarcMain; then
         xdg-open build/reports/codenarc/main.html &> /dev/null
         success=false
     fi
-    if ! ./gradlew codenarcTest; then
+    if ! gradlewFromParents codenarcTest; then
         xdg-open build/reports/codenarc/test.html &> /dev/null
         success=false
     fi
-    if ! ./gradlew codenarcIntegrationTest; then
+    if ! gradlewFromParents codenarcIntegrationTest; then
         xdg-open build/reports/codenarc/integrationTest.html &> /dev/null
         success=false
     fi
@@ -73,7 +73,7 @@ function runCodenarcCleanCheckExitIfFailure() {
     notify-send 'Codenarc was successful'
 
     # If all is well run all tests
-    if ! ./gradlew clean check; then
+    if ! gradlewFromParents clean check; then
         xdg-open build/reports/tests/index.html &> /dev/null
         return 1
     else
@@ -96,7 +96,7 @@ function getLatestGrailsAndOpen() {
 
 
 function runCleanTest() {
-    if ! ./gradlew clean test integrationTest; then
+    if ! gradlewFromParents clean test integrationTest; then
         xdg-open build/reports/tests/index.html &> /dev/null
         return 1
     else
