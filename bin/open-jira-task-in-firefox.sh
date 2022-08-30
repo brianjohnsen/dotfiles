@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-sh -c 'firefox "https://jira.erst.dk/browse/VAV-$(xclip -o)"'
+#sh -c 'firefox "https://jira.erst.dk/browse/VAV-$(xclip -o)"'
+sh -c 'firefox "https://gennemtaenkt.atlassian.net/browse/BFRI-$(xclip -o)"'
 
 
 #KOMP-66
