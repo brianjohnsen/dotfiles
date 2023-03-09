@@ -8,9 +8,6 @@ sudo snap install sublime-text --classic
 # Slack
 sudo snap install slack --classic
 
-# Spotify
-sudo snap install spotify
-
 # IntelliJ
 sudo snap install intellij-idea-ultimate --classic
 
