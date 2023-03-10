@@ -14,8 +14,8 @@ sudo apt purge -y ubuntu-web-launchers
 echo "Done removing!"
 
 
-echo "Adding Dell repos"
-sudo add-apt-repository -y 'deb http://dell.archive.canonical.com/updates focal-dell public'
+#echo "Adding Dell repos"
+#sudo add-apt-repository -y 'deb http://dell.archive.canonical.com/updates focal-dell public'
 # see: https://medium.com/@nrogap/dell-repository-for-install-additional-drivers-on-ubuntu-4cf061640180
 
 echo "Installing..."
