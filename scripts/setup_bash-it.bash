@@ -11,7 +11,7 @@ bash-it enable alias general clipboard
 
 echo "Setting up plugins"
 bash-it enable plugin git
-bash-it enable plugin history
+bash-it enable plugin history history-substring-search
 bash-it enable plugin sdkman
 bash-it enable plugin fasd
 bash-it enable plugin alias-completion

@@ -32,6 +32,9 @@ sudo apt install -y httpie
 
 sudo apt install -y fasd
 
+# make is used by git_open
+sudo apt install -y make
+
 sudo apt install -y p7zip-full
 
 sudo add-apt-repository -y ppa:hluk/copyq
@@ -92,9 +95,6 @@ sudo apt install -y caffeine
 sudo apt install -y chrome-gnome-shell
 sudo apt install -y gnome-tweaks
 
-# AS LONG AS I'M ON UNITY!
-#sudo apt install -y unity-tweak-tool
-
 # Database
 #sudo apt install -y postgresql-client-common
 #sudo apt install -y postgresql-client8
@@ -118,7 +118,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docke
 sudo apt update
 apt-cache policy docker-ce
 sudo apt install docker-ce
-sudo systemctl status docker
+#sudo systemctl status docker
 
 
 ## VirtualBox (required by vagrant)
