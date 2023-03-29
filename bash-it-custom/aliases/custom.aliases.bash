@@ -77,8 +77,8 @@ alias gitPermissionsReset='git diff -p -R --no-color | grep -E "^(diff|(old|new)
 alias gitUndoLastCommit="git reset --soft HEAD~1"
 alias gitResetCommitDate='git commit --amend --no-edit --date "$(date)"'
 #GitAhead
-alias ga="ga &> /dev/null &"
-alias gitahead="ga &> /dev/null &"
+alias ga="GitAhead &> /dev/null &"
+alias gitahead="GitAhead &> /dev/null &"
 
 
 # sublime text
