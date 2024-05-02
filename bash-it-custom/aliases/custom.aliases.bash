@@ -68,9 +68,8 @@ alias pull="git pull && git submodule update --init --recursive ; alert"
 alias push="git push ; alert"
 alias st="git st"
 alias gl="git log"
-alias gcm="git co master"
-alias gcd="git co dev"
-alias gc-="git co -"
+alias gcm="git branch | grep -o -E ' master| main' | tr -d ' ' | xargs git switch"
+alias gc-="git switch -"
 alias gg="git graph"
 # https://stackoverflow.com/questions/2517339/how-to-recover-the-file-permissions-to-what-git-thinks-the-file-should-be
 alias gitPermissionsReset='git diff -p -R --no-color | grep -E "^(diff|(old|new) mode)" --color=never | git apply'
