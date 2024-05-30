@@ -87,7 +87,7 @@ alias s='subl'
 alias path='echo -e ${PATH//:/\\n}'
 
 # From: http://askubuntu.com/questions/409611/desktop-notification-when-long-running-commands-complete
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+alias alert='notify-send -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9 -:]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Wifi on/off
 alias wd='nmcli radio wifi off'
