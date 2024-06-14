@@ -79,6 +79,7 @@ alias gitResetCommitDate='git commit --amend --no-edit --date "$(date)"'
 alias ga="GitAhead &> /dev/null &"
 alias gitahead="GitAhead &> /dev/null &"
 
+alias dockerpurge='echo "Purging docker containers and images" && docker container prune -f && docker image prune -af'
 
 # sublime text
 alias s='subl'
