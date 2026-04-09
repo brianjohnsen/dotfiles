@@ -1,24 +1,20 @@
 #@IgnoreInspection BashAddShebang
 
-## COPY
-# cp -v ~/.dotfiles/bash-it-custom/lib/custom.bash ~/.bash_it/lib/
 
 export GRAILS_OPTS="-Xmx4G -Xms512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8"
 #export GRAILS_OPTS="-Xmx4G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8"
 
 #export LC_ALL=da_DK.UTF-8
 
-## Removes (ugly!) clock char from bash-it theme
-export THEME_SHOW_CLOCK_CHAR=false
-
 # Fixes ugly dir color in gnome terminal
 ## See: https://askubuntu.com/questions/881949/ugly-color-for-directories-in-gnome-terminal
 LS_COLORS=$LS_COLORS:'ow=1;34:tw=1;34:' ; export LS_COLORS
 
 
-PROMPT_COMMAND='echo -en "\033]0; $(pwd) \a"'
 
 PATH=$PATH:~/.dotfiles/local-bin
+# required by claude
+PATH=$PATH:~/.local/bin
 
 
 ## clones a git repo and cd into the folder

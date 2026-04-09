@@ -1,7 +1,5 @@
 #@IgnoreInspection BashAddShebang
 
-## COPY
-# cp -v ~/.dotfiles/bash-it-custom/aliases/custom.aliases.bash ~/.bash_it/aliases/¡
 
 ## Navigation
 alias bfri='befri'
@@ -54,9 +52,6 @@ alias gcta='clear && grails clean-all && grails compile && grails test-app'
 alias dellServiceTag='sudo dmidecode -s system-serial-number'
 alias dellModelNumber='sudo dmidecode -s system-product-name'
 
-## Bash-It
-alias copyBashItCustom='cp -v ~/.dotfiles/bash-it-custom/aliases/custom.aliases.bash ~/.bash_it/aliases/ && cp -v ~/.dotfiles/bash-it-custom/lib/custom.bash ~/.bash_it/lib/ && source ~/.bashrc'
-
 ## Open reports
 alias opentestreport='openTestReport'
 #alias opencobertura='xdg-open build/reports/cobertura/index.html &> /dev/null'
@@ -108,7 +103,7 @@ alias wifijohnsen='nmcli c up johnsen'
 ########################################################################################################################
 ## UNALIAS
 ########################################################################################################################
-unalias piano
+#unalias piano
 unalias irc
 unalias rb
 unalias py
