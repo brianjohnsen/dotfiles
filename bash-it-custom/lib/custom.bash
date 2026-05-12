@@ -101,20 +101,23 @@ function runCleanTest() {
 }
 
 ##
-# Opens the test report if it exists
+# Opens the test report if it exists, searching subdirectories if needed
 ##
 function openTestReport() {
-    UNIT_TEST_REPORT=build/reports/tests/test/index.html
-    INTEGRATION_TEST_REPORT=build/reports/tests/index.html
-    if [ -f "$INTEGRATION_TEST_REPORT" ]; then
+    local report
+    report=$(find . -path "*/build/reports/tests/index.html" 2>/dev/null | head -1)
+    if [ -n "$report" ]; then
         echo "Opening integration test report..."
-        xdg-open $INTEGRATION_TEST_REPORT &> /dev/null
-    elif [ -f "$UNIT_TEST_REPORT" ]; then
-        echo "Opening unit test report..."
-        xdg-open $UNIT_TEST_REPORT &> /dev/null
-    else
-        echo "No test report found"
+        xdg-open "$report" &> /dev/null
+        return
     fi
+    report=$(find . -path "*/build/reports/tests/test/index.html" 2>/dev/null | head -1)
+    if [ -n "$report" ]; then
+        echo "Opening unit test report..."
+        xdg-open "$report" &> /dev/null
+        return
+    fi
+    echo "No test report found"
 }
 
 ##
