@@ -120,6 +120,18 @@ function openTestReport() {
     echo "No test report found"
 }
 
+# From: http://askubuntu.com/questions/409611/desktop-notification-when-long-running-commands-complete
+function alert() {
+    local exit_code=$?
+    local cmd
+    cmd=$(history | tail -n1 | sed -e 's/^\s*[0-9 -:]\+\s*//;s/[;&|]\s*alert$//')
+    if [ $exit_code = 0 ]; then
+        notify-send -u normal -i dialog-information "✓ Done" "$cmd"
+    else
+        notify-send -u critical -i dialog-error "✗ Failed" "$cmd"
+    fi
+}
+
 ##
 # bashit gradle-plugin before this commit:  https://github.com/Bash-it/bash-it/commit/7ed12083f26ce95cb9018bf6688fdba2e96514dc
 ##
