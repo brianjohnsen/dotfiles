@@ -121,14 +121,15 @@ function openTestReport() {
 }
 
 # From: http://askubuntu.com/questions/409611/desktop-notification-when-long-running-commands-complete
+# Use -u normal + -t; -u critical makes GNOME ignore the timeout.
 function alert() {
     local exit_code=$?
     local cmd
     cmd=$(history | tail -n1 | sed -e 's/^\s*[0-9 -:]\+\s*//;s/[;&|]\s*alert$//')
     if [ $exit_code = 0 ]; then
-        notify-send -u normal -i dialog-information "✓ Done" "$cmd"
+        notify-send -u normal -i dialog-information -t 5000 "✓ Done" "$cmd"
     else
-        notify-send -u critical -i dialog-error "✗ Failed" "$cmd"
+        notify-send -u normal -i dialog-error -t 10000 "✗ Failed" "$cmd"
     fi
 }
 
