@@ -1,55 +1,64 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
+# Run from the repo root regardless of the caller's working directory.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Log everything (commands + output) to install.log and the console.
+# Each setup script also runs with `set -x`, so the log is a complete record.
+exec > >(tee "$SCRIPT_DIR/install.log") 2>&1
+export PS4='+ [$(date "+%H:%M:%S")] '
+set -x
 
 echo "Setting up Ubuntu..."
 
-
 echo "Checking for SSH"
-if [ ! -d $HOME/.ssh/ ]; then
+if [ ! -d "$HOME/.ssh" ]; then
     echo "SSH was not found - EXIT SCRIPT!"
-    exit
+    exit 1
 fi
 
 echo "Setting right permissions for SSH"
-chmod -v 700 ~/.ssh
-chmod -v 600 ~/.ssh/id_rsa
-
+chmod -v 700 "$HOME/.ssh"
+# Private keys 600, public keys 644 - covers any id_* naming.
+find "$HOME/.ssh" -type f ! -name '*.pub' -exec chmod 600 {} \;
+find "$HOME/.ssh" -type f -name '*.pub' -exec chmod 644 {} \;
 
 # Check for Bash-It and install if not present
-if [ ! $BASH_IT ]; then
-    git clone --depth=1 https://github.com/Bash-it/bash-it.git ~/.bash_it
-    ~/.bash_it/install.sh --silent
+if [ ! -d "$HOME/.bash_it" ]; then
+    git clone --depth=1 https://github.com/Bash-it/bash-it.git "$HOME/.bash_it"
+    "$HOME/.bash_it/install.sh" --silent
 fi
 
-
 # Install apt binaries
-source scripts/setup_apt-get.bash
+bash "$SCRIPT_DIR/scripts/setup_apt-get.bash"
+
+# Install Google Chrome (.deb, not an apt-repo package)
+bash "$SCRIPT_DIR/scripts/setup_chrome.bash"
+
+# Install Docker (external apt repo)
+bash "$SCRIPT_DIR/scripts/setup_docker.bash"
 
 # Install snap
-source scripts/setup_snap.bash
+bash "$SCRIPT_DIR/scripts/setup_snap.bash"
+
+# Install JetBrains Toolbox (used to install IntelliJ IDEA)
+bash "$SCRIPT_DIR/scripts/setup_jetbrains-toolbox.bash"
 
 # Enable stuff in bash-it
-source scripts/setup_bash-it.bash
+bash "$SCRIPT_DIR/scripts/setup_bash-it.bash"
 
 # Install sdkman stuff
-source scripts/setup_sdkman.bash
+bash "$SCRIPT_DIR/scripts/setup_sdkman.bash"
 
 # Install git-open
-source scripts/setup_git-open.bash
+bash "$SCRIPT_DIR/scripts/setup_git-open.bash"
 
 # Add custom keybindings
-source scripts/setup_os_customization.bash
+bash "$SCRIPT_DIR/scripts/setup_os_customization.bash"
 
 # Install scripts
-source scripts/setup_scripts.bash
+bash "$SCRIPT_DIR/scripts/setup_scripts.bash"
 
-
-##########################################################################################
-## Backup:
-# https://www.ostechnix.com/systemback-restore-ubuntu-desktop-and-server-to-previous-state/
-##########################################################################################
-
-
-#### DO THIS
-# shutdown -r now
-####
+echo "Done! You may want to reboot."

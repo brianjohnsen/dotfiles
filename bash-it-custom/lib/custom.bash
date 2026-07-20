@@ -2,7 +2,6 @@
 
 
 export GRAILS_OPTS="-Xmx4G -Xms512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8"
-#export GRAILS_OPTS="-Xmx4G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8"
 
 #export LC_ALL=da_DK.UTF-8
 
@@ -19,26 +18,17 @@ PATH=$PATH:~/.local/bin
 
 ## clones a git repo and cd into the folder
 gitCloneCd() {
-    PARAMS=$@
-    A=${PARAMS%.*}
-    B=${A##*/}
-
-    git clone ${PARAMS} && cd "${B}"
+    local url="$1"
+    local dir
+    dir=$(basename "$url")
+    dir=${dir%.git}
+    git clone "$url" && cd "$dir"
 }
 
 
 openFile() {
     xdg-open $@ &> /dev/null
 }
-
-
-#openSkatVpn() {
-#    url="webvpn.skat.dk"
-#    group="DevOPS-ext"
-#    echo -e '\033]2;SKAT VPN\007'
-#    copyq add $SKAT_PASSWORD #add to clipboard
-#    sudo openconnect --usergroup=$group --user=$SKAT_WNUMMER $url
-#}
 
 
 ##
@@ -81,13 +71,12 @@ function runCodenarcCleanCheckExitIfFailure() {
 # Gets latest grails app from GRAILS APPLICATION FORGE and opens `build.gradle` and `gradle.properties`.
 ##
 function getLatestGrailsAndOpen() {
-    TMPDIR=/tmp/latestgrails
-    rm -r $TMPDIR
-    mkdir $TMPDIR
-    curl https://start.grails.org/project.zip -d profile=rest-api -o $TMPDIR/project.zip
-    unzip -qq $TMPDIR/project.zip -d $TMPDIR
-    xdg-open $TMPDIR/project/build.gradle &> /dev/null
-    xdg-open $TMPDIR/project/gradle.properties &> /dev/null
+    local tmp
+    tmp=$(mktemp -d)
+    curl https://start.grails.org/project.zip -d profile=rest-api -o "$tmp/project.zip"
+    unzip -qq "$tmp/project.zip" -d "$tmp"
+    xdg-open "$tmp/project/build.gradle" &> /dev/null
+    xdg-open "$tmp/project/gradle.properties" &> /dev/null
 }
 
 

@@ -4,23 +4,19 @@
 ## Navigation
 alias bfri='befri'
 alias befri='cd ~/PROJEKTER/GTIT/befri'
-alias fp='cd ~/PROJEKTER/GTIT/formueportalen && export GRAILS_OPTS="-Xmx2G -Xms512m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8"'
+alias fp='cd ~/PROJEKTER/GTIT/formueportalen && export GRAILS_OPTS="-Xmx2G -Xms512m -Dfile.encoding=UTF-8 -Djava.encoding=UTF-8"'
 alias formueportalen='fp'
 
 ## System
 alias updateAll='LANG=C sudo apt -y update && LANG=C sudo apt -y upgrade && LANG=C sudo apt -y autoremove'
 
-## ERST
-alias erstMountLogs='cd ~/.dotfiles/bin && bash ./erst_create_logs_mount.sh && cd /media/nc/logs-nine/kompensationsmodul/'
-alias erstCopyProdLogs='cd /media/nc/logs-nine/kompensationsmodul && cat prod-app-p06/kompensationsmodul.log prod-app-p05/kompensationsmodul.log > /tmp/KOMP.log && cd /tmp'
-alias erstCopyDevLogs='cd /media/nc/logs-nine/kompensationsmodul && cat dev-app-d06/kompensationsmodul.log dev-app-d05/kompensationsmodul.log > /tmp/KOMPDEV.log && cd /tmp'
-alias erstCopyTestLogs='cd /media/nc/logs-nine/kompensationsmodul && cat test-app-t06/kompensationsmodul.log test-app-t05/kompensationsmodul.log > /tmp/KOMPTEST.log && cd /tmp'
-alias erstVpn='cd ~/.dotfiles/bin && bash ./anyconnect-vpn.sh && cd -'
+## Backup / restore (see ~/.dotfiles/backup/README.md)
+alias backup='bash ~/.dotfiles/backup/backup.sh'
+alias restore='bash ~/.dotfiles/backup/restore.sh'
 
 ## General
 alias ll='ls -lah'
 alias open='openFile'
-alias bat='batcat'
 
 ## Gradle
 #alias gw='./gradlew'
@@ -41,13 +37,6 @@ alias gwcodenarc='gw codenarcMain codenarcTest codenarcIntegrationTest'
 alias runcheck='runCodenarcCleanCheckExitIfFailure'
 alias runtest='runCleanTest'
 
-
-## GRAILS
-alias gt='grails test'
-alias gta='grails test-app -echoOut'
-alias grun='grails run-app'
-alias gcta='clear && grails clean-all && grails compile && grails test-app'
-#alias opentests='open target/test-reports/html/index.html'
 
 # Dell specific
 alias dellServiceTag='sudo dmidecode -s system-serial-number'
@@ -71,14 +60,8 @@ alias gg="git graph"
 alias gitPermissionsReset='git diff -p -R --no-color | grep -E "^(diff|(old|new) mode)" --color=never | git apply'
 alias gitUndoLastCommit="git reset --soft HEAD~1"
 alias gitResetCommitDate='git commit --amend --no-edit --date "$(date)"'
-#GitAhead
-alias ga="GitAhead &> /dev/null &"
-alias gitahead="GitAhead &> /dev/null &"
 
 alias dockerpurge='echo "Purging docker containers and images" && docker container prune -f && docker image prune -af'
-
-# sublime text
-alias s='subl'
 
 # Nice path
 alias path='echo -e ${PATH//:/\\n}'

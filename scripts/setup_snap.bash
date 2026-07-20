@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euxo pipefail
+
 echo "Installing snaps..."
 
 # Sublime Text
@@ -7,9 +9,6 @@ sudo snap install sublime-text --classic
 
 # Slack
 sudo snap install slack
-
-# IntelliJ
-sudo snap install intellij-idea-ultimate --classic
 
 # Opera
 sudo snap install opera

@@ -8,28 +8,43 @@
 # sudo su
 # ./better_history.sh
 
+set -euo pipefail
+
 GLOBALBASHRC=/etc/bash.bashrc
+MARKER="# >>> better_history >>>"
 
 echo ">>> Starting"
-echo ">>> Copying original $GLOBALBASHRC"
-cp $GLOBALBASHRC /etc/bash.bashrc.old
+
+# Idempotent: bail out if the config block is already present
+if grep -qF "$MARKER" "$GLOBALBASHRC"; then
+    echo ">>> better_history already configured in $GLOBALBASHRC - nothing to do"
+    exit 0
+fi
+
+# Back up the original once - don't clobber an existing backup
+if [ ! -f /etc/bash.bashrc.old ]; then
+    echo ">>> Copying original $GLOBALBASHRC to /etc/bash.bashrc.old"
+    cp "$GLOBALBASHRC" /etc/bash.bashrc.old
+fi
+
 echo ">>> Loading configuration into $GLOBALBASHRC"
-echo "HISTTIMEFORMAT='%F %T '" >> $GLOBALBASHRC
-echo 'HISTFILESIZE=-1' >> $GLOBALBASHRC
-echo 'HISTSIZE=-1' >> $GLOBALBASHRC
-echo 'HISTCONTROL=ignoredups' >> $GLOBALBASHRC
-echo 'HISTIGNORE=?:??' >> $GLOBALBASHRC
-echo '# append to history, dont overwrite it' >> $GLOBALBASHRC
-echo 'shopt -s histappend' >> $GLOBALBASHRC
-echo '# attempt to save all lines of a multiple-line command in the same history entry' >> $GLOBALBASHRC
-echo 'shopt -s cmdhist' >> $GLOBALBASHRC
-echo '# save multi-line commands to the history with embedded newlines' >> $GLOBALBASHRC
-echo 'shopt -s lithist' >> $GLOBALBASHRC
-echo '# After each command, append to the history file and reread it' >> $GLOBALBASHRC
-echo 'export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$"\n"}history -a; history -c; history -r"' >> $GLOBALBASHRC
+cat >> "$GLOBALBASHRC" <<'EOF'
 
-# Reload BASH for settings to take effect
-echo ">>> Reloading BASH"
-exec "$BASH"
+# >>> better_history >>>
+HISTTIMEFORMAT='%F %T '
+HISTFILESIZE=-1
+HISTSIZE=-1
+HISTCONTROL=ignoredups
+HISTIGNORE=?:??
+# append to history, dont overwrite it
+shopt -s histappend
+# attempt to save all lines of a multiple-line command in the same history entry
+shopt -s cmdhist
+# save multi-line commands to the history with embedded newlines
+shopt -s lithist
+# After each command, append to the history file and reread it
+export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+# <<< better_history <<<
+EOF
 
-echo ">>> Finished. Exiting."
+echo ">>> Finished. Open a new shell for the settings to take effect."

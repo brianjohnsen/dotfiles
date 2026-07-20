@@ -48,3 +48,10 @@ fabric.properties
 .DS_Store
 .dotfiles.iml
 .idea/
+
+# Backup archive - contains private SSH keys, must NEVER be committed
+backup/*.tar.gz
+backup/*.gpg
+
+# install.sh run log
+install.log

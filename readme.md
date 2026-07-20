@@ -14,13 +14,11 @@ Follow these install instructions to setup a new Ubuntu.
 
 1. Set main download server
    1. Software & updates -> Ubuntu software -> Download from: Main server
-1. Install git: `sudo apt-get update && sudo apt-get install -y git`
-1. Clone this repo to `~/.dotfiles` 
-   1. `git clone git@github.com:brianjohnsen/dotfiles.git ~/.dotfiles`
-1. Run `install.sh` to start the installation
-1. Make sure Dropbox is set up and synced
-    1. Install Dropbox manually
-    1. via https://linuxconfig.org/ubuntu-20-04-dropbox-installation-and-desktop-integration
+1. Restore your secrets/config and bootstrap the machine following
+   [`backup/README.md`](backup/README.md) — it restores SSH keys, installs git,
+   clones this repo to `~/.dotfiles`, and runs `install.sh`.
+1. After install, install IntelliJ IDEA via **JetBrains Toolbox** (launched from
+   `~/.local/share/JetBrains/Toolbox/bin/jetbrains-toolbox`).
 1. Restart your computer to finalize the process
    1. `shutdown -r now`
 

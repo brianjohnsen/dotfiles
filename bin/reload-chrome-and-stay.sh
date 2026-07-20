@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-## find PID of Chrome
+# find the Chrome window
 WID=$(xdotool search --onlyvisible --class Chrome)
 
-## activate chrome window
-xdotool windowactivate --sync $WID
+# activate chrome window (and stay here)
+xdotool windowactivate --sync "$WID"
 
 sleep .5
 
-## send keystroke
+# send keystroke
 xdotool key 'ctrl+r'
