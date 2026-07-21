@@ -43,6 +43,9 @@ bash "$SCRIPT_DIR/scripts/setup_docker.bash"
 # Install 1Password CLI (external apt repo; used by backup-1password.sh)
 bash "$SCRIPT_DIR/scripts/setup_1password-cli.bash"
 
+# Install Claude Code (native installer)
+bash "$SCRIPT_DIR/scripts/setup_claude.bash"
+
 # Install snap
 bash "$SCRIPT_DIR/scripts/setup_snap.bash"
 
