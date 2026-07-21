@@ -12,6 +12,7 @@ alias updateAll='LANG=C sudo apt -y update && LANG=C sudo apt -y upgrade && LANG
 
 ## Backup / restore (see ~/.dotfiles/backup/README.md)
 alias backup='bash ~/.dotfiles/backup/backup.sh'
+alias backup1p='bash ~/.dotfiles/backup/backup-1password.sh'
 alias restore='bash ~/.dotfiles/backup/restore.sh'
 
 ## General

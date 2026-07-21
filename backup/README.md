@@ -1,71 +1,68 @@
 # Backup & restore — recovery kit
 
-Self-contained kit for backing up and restoring the machine-specific
-secrets/config that are **not** in git. Everything travels together: the two
-scripts, this README, and the archive.
+Backs up the machine-specific secrets/config that are **not** in git, and restores
+them on a fresh machine (before cloning the repo).
 
 ## What's backed up
 
 | Item | Path |
 |---|---|
-| SSH keys | `~/.ssh` (all keys) |
+| SSH keys | `~/.ssh` (all keys + config) |
+| GPG keys | `~/.gnupg` |
+| Kubernetes | `~/.kube` |
+| DigitalOcean CLI | `~/.config/doctl` |
+| Docker auth | `~/.docker/config.json` |
 | Gradle (personal) | `~/.gradle/gradle.properties` |
 | Git config | `~/.gitconfig*` |
+| CopyQ / display / autostart | `~/.config/copyq`, `~/.config/monitors.xml`, `~/.config/autostart` |
 | Hosts file | `/etc/hosts` |
 
-Everything ends up in `restore-secrets.tar.gz` next to the scripts. That file is
-gitignored and **must never be committed** — it contains private SSH keys in
-clear text.
+Backup produces a **single self-extracting file**, `restore-secrets.run`, next to
+these scripts. It is **gitignored** (it contains private SSH/GPG keys and tokens
+in clear text — never commit it). Restore = get that one file onto the machine and
+run it. No need to copy the folder or clone the repo.
 
 ## Make a backup
 
+**Local only:**
 ```bash
-./backup.sh
+backup          # alias for backup/backup.sh
 ```
+Produces `restore-secrets.run`. Copy just that one file to a trusted medium (e.g.
+an encrypted USB) and delete the local copy when done.
 
-Then move the **whole `backup/` folder** (including `restore-secrets.tar.gz`) to
-a trusted medium (e.g. an encrypted USB drive) and delete the local copy when
-done.
+**Local + push to 1Password (recommended):**
+```bash
+backup1p        # alias for backup/backup-1password.sh
+```
+Builds `restore-secrets.run` and uploads it to 1Password as the document
+**dotfiles-restore** (vault **Personal**). Requires the `op` CLI installed and
+authenticated (see below).
 
-> ⚠️ **Security:** the archive holds private SSH keys unencrypted. Keep the
-> medium safe and don't leave stray copies lying around.
+> ⚠️ **Security:** the runner holds private SSH/GPG keys and tokens unencrypted.
+> Keep any medium safe and don't leave stray copies lying around. 1Password stores
+> it encrypted in your vault.
 
-## Fresh machine — full bootstrap
+## op CLI (one-time)
 
-The archive is self-contained, so there is no chicken-and-egg with cloning the
-dotfiles repo:
+`op` is installed by `scripts/setup_1password-cli.bash` (run by `install.sh`).
+Authenticate it once: in the 1Password app → **Settings → Developer → "Integrate
+with 1Password CLI"**, or run `op signin`. (`op whoami` may report "not signed in"
+under app integration even when it works — `op vault list` is the real test.)
 
-1. Copy the whole `backup/` folder (incl. `restore-secrets.tar.gz`) onto the machine.
-2. Install git:
-   ```bash
-   sudo apt install -y git
-   ```
-3. Restore secrets/config (sets SSH permissions 700/600 automatically):
-   ```bash
-   ./restore.sh
-   ```
-4. Clone the dotfiles repo over SSH (keys are now in place):
-   ```bash
-   git clone git@github.com:brianjohnsen/dotfiles.git ~/.dotfiles
-   ```
-5. Run the installer:
-   ```bash
-   cd ~/.dotfiles && ./install.sh
-   ```
+## Restore on a fresh machine
 
-## Post-install (manual)
+Restore runs **before** cloning the repo (it provides the SSH keys you need to
+clone). Get `restore-secrets.run` onto the machine — either way, then run it:
 
-A few things `install.sh` intentionally does not automate:
+- **From 1Password:** install the 1Password app, sign in, download the
+  **dotfiles-restore** document (you get `restore-secrets.run`).
+- **From a medium (USB):** copy the single `restore-secrets.run` file over.
 
-- **IntelliJ IDEA** — launch JetBrains Toolbox
-  (`~/.local/share/JetBrains/Toolbox/bin/jetbrains-toolbox`), sign in, and
-  install IntelliJ IDEA Ultimate from there.
-- **Docker without sudo** — log out/in (or run `newgrp docker`) after install so
-  the `docker` group membership takes effect.
-- **SDKMAN / Java** — verify with `sdk current java`; change with
-  `sdk default java <version>` if needed.
+```bash
+bash restore-secrets.run
+```
+It unpacks everything and fixes SSH/GPG permissions (needs `sudo` only for
+`/etc/hosts`, which is skipped with a warning if root isn't available).
 
-## Ongoing backups
-
-Run `backup` (alias for `backup/backup.sh`), move the folder to your trusted
-medium, and delete the local copy.
+After restoring, continue the fresh-install steps in the main [README](../readme.md).

@@ -14,7 +14,7 @@ cd ~/.dotfiles
 ./install.sh
 ```
 
-`install.sh` runs each setup script as a subprocess (with `set -euo pipefail`), sequentially: apt packages → snap packages → JetBrains Toolbox → bash-it → SDKMAN → git-open → GNOME keybindings → script links.
+`install.sh` runs each setup script as a subprocess (with `set -euo pipefail`), sequentially: apt packages → Chrome → Docker → 1Password CLI → snap packages → JetBrains Toolbox → bash-it → SDKMAN → git-open → GNOME keybindings → script links. All output is tee'd to `install.log`.
 
 ## Architecture: two layers
 
@@ -56,8 +56,9 @@ Changes to `aliases/custom.aliases.bash` or `lib/custom.bash` take effect in new
 ## Backup & restore
 
 `backup/` is a self-contained recovery kit (not run by `install.sh`):
-- `backup/backup.sh` (alias `backup`) archives `~/.ssh`, personal Gradle config, `~/.gitconfig*` and `/etc/hosts` into `backup/restore-secrets.tar.gz` (gitignored — contains private keys).
-- `backup/restore.sh` (alias `restore`) restores that archive and fixes SSH permissions.
+- `backup/backup.sh` (alias `backup`) archives `~/.ssh`, `~/.gnupg`, `~/.kube`, `~/.config/{doctl,copyq,monitors.xml,autostart}`, `~/.docker/config.json`, personal Gradle config, `~/.gitconfig*` and `/etc/hosts` into a single self-extracting `backup/restore-secrets.run` (gitignored — private keys/tokens in clear text). Restore = get that one file onto the machine and `bash restore-secrets.run`.
+- `backup/backup-1password.sh` (alias `backup1p`) runs `backup.sh` and uploads the `.run` to 1Password (document `dotfiles-restore`, vault `Personal`) via the `op` CLI.
+- `backup/restore.sh` is the runner's header (catted into the `.run`) and also the restore logic; it fixes SSH/GPG permissions. Dual-mode: embedded in a `.run` (after a `__PAYLOAD_BELOW__` marker) it self-extracts; run standalone next to a `restore-secrets.tar.gz` it reads that instead.
 - `backup/README.md` is the full fresh-install bootstrap runbook.
 
 ## Environment variables
