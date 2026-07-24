@@ -49,14 +49,15 @@ if [ -d "$HOME/.gnupg" ]; then
     find "$HOME/.gnupg" -type f -exec chmod 600 {} \;
 fi
 
-# Restore /etc/hosts (needs root; non-fatal so a missing sudo doesn't abort the
-# whole restore after the important secrets are already in place)
+# Restore /etc/hosts (needs root). Fail hard rather than half-restore: a run that
+# can't write /etc/hosts is incomplete, so exit non-zero and let the user re-run
+# with sudo access.
 if [ -f "$STAGING/etc/hosts" ]; then
-    if sudo cp "$STAGING/etc/hosts" /etc/hosts; then
-        echo "Restored /etc/hosts."
-    else
-        echo "WARNING: could not update /etc/hosts (needs root) - skipped." >&2
+    if ! sudo cp "$STAGING/etc/hosts" /etc/hosts; then
+        echo "ERROR: could not restore /etc/hosts (needs root). Re-run where you can sudo." >&2
+        exit 1
     fi
+    echo "Restored /etc/hosts."
 fi
 
 echo "Restore complete."

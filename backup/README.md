@@ -62,7 +62,8 @@ clone). Get `restore-secrets.run` onto the machine — either way, then run it:
 ```bash
 bash restore-secrets.run
 ```
-It unpacks everything and fixes SSH/GPG permissions (needs `sudo` only for
-`/etc/hosts`, which is skipped with a warning if root isn't available).
+It unpacks everything and fixes SSH/GPG permissions. It needs `sudo` for
+`/etc/hosts`, so run it where you can authenticate — it fails (rather than
+half-restoring) if it can't write `/etc/hosts`.
 
 After restoring, continue the fresh-install steps in the main [README](../readme.md).
