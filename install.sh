@@ -49,6 +49,9 @@ bash "$SCRIPT_DIR/scripts/setup_claude.bash"
 # Install snap
 bash "$SCRIPT_DIR/scripts/setup_snap.bash"
 
+# Set default applications (Chrome for http/https/mailto, remove Thunderbird)
+bash "$SCRIPT_DIR/scripts/setup_default-apps.bash"
+
 # Install JetBrains Toolbox (used to install IntelliJ IDEA)
 bash "$SCRIPT_DIR/scripts/setup_jetbrains-toolbox.bash"
 

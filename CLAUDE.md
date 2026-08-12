@@ -14,7 +14,7 @@ cd ~/.dotfiles
 ./install.sh
 ```
 
-`install.sh` runs each setup script as a subprocess (with `set -euo pipefail`), sequentially: apt packages → Chrome → Docker → 1Password CLI → Claude Code → snap packages → JetBrains Toolbox → bash-it → SDKMAN → git-open → GNOME keybindings → script links. All output is tee'd to `install.log`.
+`install.sh` runs each setup script as a subprocess (with `set -euo pipefail`), sequentially: apt packages → Chrome → Docker → 1Password CLI → Claude Code → snap packages → default apps → JetBrains Toolbox → bash-it → SDKMAN → git-open → GNOME keybindings → script links. All output is tee'd to `install.log`.
 
 ## Architecture: two layers
 
@@ -68,3 +68,4 @@ Changes to `aliases/custom.aliases.bash` or `lib/custom.bash` take effect in new
 ## Notes
 
 - IntelliJ IDEA is installed manually via JetBrains Toolbox (see `backup/README.md`), not as a snap.
+- `mailto:` is deliberately left with no handler — clicking a mail link does nothing. Routing it to Gmail in Chrome was tried and rejected: with several Google accounts open in different tabs, Chrome picks the wrong one. Leaving `mailto` merely *unset* doesn't work, because once Thunderbird is purged the Firefox snap is the only app advertising `x-scheme-handler/mailto` and the fallback picks it. So `scripts/setup_default-apps.bash` blocks it via `[Removed Associations]` in `~/.config/mimeapps.list`. The Firefox snap itself stays installed on purpose — `bin/open-jira-task-in-firefox.sh` uses it.
