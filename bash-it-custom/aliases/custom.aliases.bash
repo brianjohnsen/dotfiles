@@ -73,7 +73,7 @@ alias wd='nmcli radio wifi off'
 alias wu='nmcli radio wifi on'
 # Wifi network
 alias wifijohnsen='nmcli c up johnsen'
-
+alias wifikoncern='nmcli c up koncern-wifi'
 
 ########################################################################################################################
 ## From bash-it -> osx.aliases.bash
