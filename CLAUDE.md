@@ -14,7 +14,7 @@ cd ~/.dotfiles
 ./install.sh
 ```
 
-`install.sh` runs each setup script as a subprocess (with `set -euo pipefail`), sequentially: apt packages → Chrome → Docker → 1Password CLI → Claude Code → snap packages → default apps → JetBrains Toolbox → bash-it → SDKMAN → git-open → GNOME keybindings → script links. All output is tee'd to `install.log`.
+`install.sh` runs each setup script as a subprocess (with `set -euo pipefail`), sequentially: apt packages → Chrome → Docker → 1Password CLI → 1Password browser integration → Claude Code → snap packages → default apps → JetBrains Toolbox → bash-it → SDKMAN → git-open → GNOME keybindings → script links. All output is tee'd to `install.log`.
 
 ## Architecture: two layers
 
@@ -69,3 +69,4 @@ Changes to `aliases/custom.aliases.bash` or `lib/custom.bash` take effect in new
 
 - IntelliJ IDEA is installed manually via JetBrains Toolbox (see `backup/README.md`), not as a snap.
 - `mailto:` is deliberately left with no handler — clicking a mail link does nothing. Routing it to Gmail in Chrome was tried and rejected: with several Google accounts open in different tabs, Chrome picks the wrong one. Leaving `mailto` merely *unset* doesn't work, because once Thunderbird is purged the Firefox snap is the only app advertising `x-scheme-handler/mailto` and the fallback picks it. So `scripts/setup_default-apps.bash` blocks it via `[Removed Associations]` in `~/.config/mimeapps.list`. The Firefox snap itself stays installed on purpose — `bin/open-jira-task-in-firefox.sh` uses it.
+- The 1Password extension in Firefox only connects to the desktop app because `scripts/setup_1password.bash` adds `xdg-desktop-portal` to `/etc/1password/custom_allowed_browsers`. The Firefox snap can't exec `/opt/1Password/1Password-BrowserSupport` itself, so it goes through the WebExtensions portal; 1Password then sees the portal as the calling process and rejects it as `UnknownBrowser` (visible in `~/.config/1Password/logs/BrowserSupport/`). Chrome needs none of this — it's a real .deb and launches the helper directly. Replacing the Firefox snap with Mozilla's .deb (what 1Password officially recommends) was rejected as too invasive: apt repo + pinning, a 1.7 GB profile migration out of `~/snap/firefox/common/.mozilla`, and the mailto desktop-id above would change.
