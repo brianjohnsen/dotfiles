@@ -1,0 +1,275 @@
+#!/bin/bash
+# UFST/SKAT — synkroniser interne CA-certifikater til begge trust stores.
+#
+#   ufst-ca          Hent, sammenlign, installer kun det ændrede
+#   ufst-ca --vis    Tørløb: vis forskelle uden at røre noget
+#   ufst-ca --ryd    Fjern ufst-CA'er som ingen vært længere præsenterer
+#
+# To lagre holdes ajour: systemets (curl, git, Node, Firefox) og Citrix
+# Workspace' eget, som ikke ser systemets. Uden det sidste kan storebrowse
+# ikke tale med StoreFront, og man er tilbage ved manuelle .ica-filer.
+#
+# SKAT roterer deres udstedende CA'er, og AIA-URL'erne til rødderne
+# (crl.ccta.dk / crl-public.ccta.dk) svarer ikke. Derfor hentes
+# mellemcertifikaterne fra værterne selv og installeres som tillidsankre.
+# Det giver snævrere tillid end roden — kun disse udstedende CA'er, ikke
+# hele SKATs PKI — mod at rotation kræver en ny kørsel af dette script.
+
+set -euo pipefail
+shopt -s nullglob
+
+# Interne værter der præsenterer SKAT-certifikater. Udvid frit.
+UFST_HOSTS=(front.ccta.dk iam.ccta.dk confluence.ccta.dk iut.ccta.dk)
+
+MAAL=/usr/local/share/ca-certificates
+PRAEFIKS=ufst-
+ADVAR_DAGE=90
+
+# Citrix Workspace bruger sit EGET certifikatlager og ser ikke systemets.
+# Uden dette fejler `storebrowse` mod https://front.ccta.dk/Citrix/storefrontWeb/,
+# og man er tilbage ved at hente .ica-filer manuelt.
+CITRIX_DIR=/opt/Citrix/ICAClient
+CITRIX_MAAL="$CITRIX_DIR/keystore/cacerts"
+CITRIX_REHASH="$CITRIX_DIR/util/ctx_rehash"
+
+# Filer fra den manuelle førsteinstallation, før dette script fandtes.
+# Fjernes når deres præfiksede afløser er på plads.
+LEGACY=(SKAT-Issuing-CA1.crt SKAT-RSA-Issuing-CA-01.crt)
+
+TILSTAND=${1:-}
+case "$TILSTAND" in
+    ""|--vis|--ryd) ;;
+    -h|--help)
+        sed -n '2,10p' "$(readlink -f "$0")" | sed 's/^# \?//'
+        exit 0 ;;
+    *) echo "Ukendt tilvalg: $TILSTAND (brug --vis eller --ryd)" >&2; exit 2 ;;
+esac
+
+STAGE=$(mktemp -d)
+trap 'rm -rf "$STAGE"' EXIT
+
+fingeraftryk() {
+    openssl x509 -in "$1" -noout -fingerprint -sha256 2>/dev/null | cut -d= -f2
+}
+
+# CN → filnavn. Kun [A-Za-z0-9_-] bevares, så navnet hverken kan indeholde
+# skråstreger eller '..' — det kommer fra et certifikat serveren sender.
+cn_til_filnavn() {
+    local cn=$1 navn
+    navn=$(printf '%s' "$cn" | tr -cs 'A-Za-z0-9_-' '-' | sed 's/^-*//; s/-*$//')
+    [[ -n $navn ]] || return 1
+    printf '%s%s.crt' "$PRAEFIKS" "$navn"
+}
+
+if ! pgrep -x openconnect >/dev/null 2>&1; then
+    echo "VPN er nede — værterne er kun tilgængelige gennem tunnelen." >&2
+    echo "Kør 'ufst-op' først." >&2
+    exit 1
+fi
+
+# ---------------------------------------------------------------- hent
+echo "Henter certifikatkæder"
+mkdir -p "$STAGE/ca"
+
+for h in "${UFST_HOSTS[@]}"; do
+    d="$STAGE/raw/$h"
+    mkdir -p "$d"
+
+    timeout 20 openssl s_client -connect "$h:443" -servername "$h" -showcerts \
+        </dev/null 2>/dev/null \
+      | awk -v d="$d" '
+          /BEGIN CERT/ {n++; f = d "/" n ".pem"}
+          f            {print > f}
+          /END CERT/   {f = ""}' || true
+
+    modtaget=0 fundet=0
+    for f in "$d"/*.pem; do
+        modtaget=$((modtaget + 1))
+
+        # Kun CA-certifikater er tillidsankre; bladcertifikatet kasseres.
+        openssl x509 -in "$f" -noout -text 2>/dev/null | grep -q 'CA:TRUE' || continue
+
+        cn=$(openssl x509 -in "$f" -noout -subject -nameopt multiline 2>/dev/null \
+             | sed -n 's/^ *commonName *= *//p' | head -1)
+        [[ -n $cn ]] || continue
+
+        navn=$(cn_til_filnavn "$cn") || continue
+        cp "$f" "$STAGE/ca/$navn"
+        fundet=$((fundet + 1))
+    done
+
+    # Skeln de to tilfælde: værten kunne ikke nås, eller den svarede fint men
+    # sendte kun sit bladcertifikat. De kræver vidt forskellig handling.
+    if (( modtaget == 0 )); then
+        echo "  $h: intet svar — er værten nede, eller mangler den i DNS?" >&2
+    elif (( fundet == 0 )); then
+        echo "  $h: svarede, men sendte ingen mellemcertifikater." >&2
+        echo "      Kun bladcertifikatet kom med, så CA'en skal skaffes ad" >&2
+        echo "      anden vej (UFST's intranet eller crl.ccta.dk)." >&2
+    else
+        echo "  $h: $fundet CA-certifikat(er)"
+    fi
+done
+
+kandidater=("$STAGE"/ca/*.crt)
+if (( ${#kandidater[@]} == 0 )); then
+    echo "Hentede ingenting — intet at gøre." >&2
+    exit 1
+fi
+
+# ------------------------------------------------------------ sammenlign
+echo
+echo "Sammenligner med $MAAL"
+declare -a NYE=() AENDREDE=() UAENDREDE=()
+
+for k in "${kandidater[@]}"; do
+    navn=$(basename "$k")
+    installeret="$MAAL/$navn"
+
+    if [[ ! -e $installeret ]]; then
+        NYE+=("$navn")
+    # Filerne er 644, så der skal ikke sudo til at læse dem — kun til at skrive.
+    elif [[ "$(fingeraftryk "$k")" == "$(fingeraftryk "$installeret")" ]]; then
+        UAENDREDE+=("$navn")
+    else
+        AENDREDE+=("$navn")
+    fi
+done
+
+for n in "${UAENDREDE[@]}"; do echo "  uændret   $n"; done
+for n in "${NYE[@]}";       do echo "  NY        $n"; done
+for n in "${AENDREDE[@]}";  do echo "  ROTERET   $n"; done
+
+# Citrix' lager sammenlignes for sig. Det kan mangle certifikater selvom
+# systemets er ajour — f.eks. hvis Citrix er installeret efter sidste kørsel.
+declare -a CITRIX_MANGLER=()
+
+if [[ -d $CITRIX_MAAL ]]; then
+    echo
+    echo "Sammenligner med $CITRIX_MAAL"
+    for k in "${kandidater[@]}"; do
+        navn=$(basename "$k")
+        if [[ -e "$CITRIX_MAAL/$navn" ]] \
+           && [[ "$(fingeraftryk "$k")" == "$(fingeraftryk "$CITRIX_MAAL/$navn")" ]]; then
+            echo "  uændret   $navn"
+        else
+            CITRIX_MANGLER+=("$navn")
+            echo "  MANGLER   $navn"
+        fi
+    done
+else
+    echo
+    echo "Citrix ikke installeret ($CITRIX_DIR) — springer dets lager over."
+fi
+
+# ----------------------------------------------------------- udløbstjek
+echo
+echo "Udløb"
+naa=$(date +%s)
+for k in "${kandidater[@]}"; do
+    slut=$(openssl x509 -in "$k" -noout -enddate | cut -d= -f2)
+    slut_s=$(date -d "$slut" +%s 2>/dev/null || echo 0)
+    dage=$(( (slut_s - naa) / 86400 ))
+    if (( slut_s == 0 )); then
+        printf '  %-40s %s\n' "$(basename "$k")" "$slut"
+    elif (( dage < ADVAR_DAGE )); then
+        printf '  %-40s \033[1;31m%s dage tilbage\033[0m\n' "$(basename "$k")" "$dage"
+    else
+        printf '  %-40s %s dage tilbage\n' "$(basename "$k")" "$dage"
+    fi
+done
+
+# ------------------------------------------------------------------ ryd
+if [[ $TILSTAND == --ryd ]]; then
+    echo
+    echo "Rydder ufst-CA'er som ingen vært præsenterer"
+    fjernet=0 citrix_fjernet=0
+
+    for f in "$MAAL/$PRAEFIKS"*.crt; do
+        navn=$(basename "$f")
+        [[ -e "$STAGE/ca/$navn" ]] && continue
+        echo "  system: fjerner $navn"
+        sudo rm -f "$f"
+        fjernet=$((fjernet + 1))
+    done
+
+    for f in "$CITRIX_MAAL/$PRAEFIKS"*.crt; do
+        navn=$(basename "$f")
+        [[ -e "$STAGE/ca/$navn" ]] && continue
+        echo "  citrix: fjerner $navn"
+        sudo rm -f "$f"
+        citrix_fjernet=$((citrix_fjernet + 1))
+    done
+
+    (( fjernet > 0 )) && sudo update-ca-certificates
+    (( citrix_fjernet > 0 )) && [[ -x $CITRIX_REHASH ]] && sudo "$CITRIX_REHASH" >/dev/null 2>&1
+    (( fjernet + citrix_fjernet == 0 )) && echo "  intet at fjerne"
+    exit 0
+fi
+
+# --------------------------------------------------------------- tørløb
+if [[ $TILSTAND == --vis ]]; then
+    echo
+    if (( ${#NYE[@]} + ${#AENDREDE[@]} + ${#CITRIX_MANGLER[@]} == 0 )); then
+        echo "Alt er opdateret — en rigtig kørsel ville ikke gøre noget."
+    else
+        echo "En rigtig kørsel ville:"
+        (( ${#NYE[@]} + ${#AENDREDE[@]} > 0 )) \
+            && echo "  · systemets lager: ${#NYE[@]} ny(e), ${#AENDREDE[@]} roteret/roterede"
+        (( ${#CITRIX_MANGLER[@]} > 0 )) \
+            && echo "  · Citrix' lager:   ${#CITRIX_MANGLER[@]} certifikat(er)"
+    fi
+    exit 0
+fi
+
+# ------------------------------------------------------------- installer
+echo
+if (( ${#NYE[@]} + ${#AENDREDE[@]} + ${#CITRIX_MANGLER[@]} == 0 )); then
+    echo "Intet at gøre — begge lagre er ajour."
+    exit 0
+fi
+
+sudo -v
+
+if (( ${#NYE[@]} + ${#AENDREDE[@]} > 0 )); then
+    echo "Systemets lager:"
+    for navn in "${NYE[@]}" "${AENDREDE[@]}"; do
+        sudo install -m 644 -o root -g root "$STAGE/ca/$navn" "$MAAL/$navn"
+        echo "  installeret $navn"
+    done
+
+    # Førsteinstallationens filer havde ikke præfiks. Fjern dem nu hvor de
+    # præfiksede findes, så samme CA ikke ligger to gange i trust store.
+    for gammel in "${LEGACY[@]}"; do
+        if [[ -e "$MAAL/$gammel" ]]; then
+            echo "  fjerner tidligere $gammel (afløst af præfikset udgave)"
+            sudo rm -f "$MAAL/$gammel"
+        fi
+    done
+
+    sudo update-ca-certificates
+fi
+
+if (( ${#CITRIX_MANGLER[@]} > 0 )); then
+    echo "Citrix' lager:"
+    for navn in "${CITRIX_MANGLER[@]}"; do
+        sudo install -m 644 -o root -g root "$STAGE/ca/$navn" "$CITRIX_MAAL/$navn"
+        echo "  installeret $navn"
+    done
+
+    # Citrix slår CA'er op via OpenSSL-hash-symlinks, ligesom systemets lager.
+    # Uden rehash ligger filerne der uden at blive fundet.
+    if [[ -x $CITRIX_REHASH ]]; then
+        sudo "$CITRIX_REHASH" >/dev/null 2>&1 \
+            && echo "  ctx_rehash kørt" \
+            || echo "  ADVARSEL: ctx_rehash fejlede — certifikaterne findes måske ikke af Citrix" >&2
+    else
+        echo "  ADVARSEL: $CITRIX_REHASH mangler; kunne ikke genskabe hash-symlinks" >&2
+    fi
+fi
+
+echo
+echo "Færdig. Test med:"
+for h in "${UFST_HOSTS[@]}"; do
+    echo "  curl -sSI https://$h/ | head -1"
+done

@@ -56,3 +56,7 @@ backup/*.run
 
 # install.sh run log
 install.log
+
+# UFST VPN-kodeord. Filen hører hjemme i $HOME, ikke her — denne linje er
+# en ekstra sikring hvis en kopi nogensinde lander i repoet.
+.ufst-password

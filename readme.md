@@ -43,6 +43,18 @@ A few things `install.sh` intentionally does not automate:
   `docker` group membership takes effect.
 - **SDKMAN / Java** — verify `sdk current java`; change with
   `sdk default java <version>` if needed.
+- **UFST VPN password** — the `ufst-*` scripts read `~/.ufst-password`, which
+  holds the VPN password and (when available) the Authenticator TOTP seed. It
+  deliberately lives outside this repo so it cannot be committed. Restore it
+  from backup, or recreate it:
+  ```bash
+  umask 077
+  cat > ~/.ufst-password <<'FIL'
+  VPN_PASSWORD='...'
+  VPN_TOTP_SECRET=''
+  FIL
+  ```
+  Running `ufst-op` without it prints these instructions.
 
 
 ## Customize

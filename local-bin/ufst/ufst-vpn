@@ -1,0 +1,234 @@
+#!/bin/bash
+# UFST/SKAT VPN — toggle
+#
+#   ufst-vpn op | ned | status
+#
+# Kodeordet ligger i ~/.ufst-password (mode 600), uden for dette repo.
+# Det sendes til openconnect via stdin (--passwd-on-stdin), ikke som
+# argument — så det er ikke synligt i `ps` for andre brugere på maskinen.
+
+set -uo pipefail
+
+VPN_USER=W93402
+VPN_HOST=hap.skat.dk
+
+# UFST's interne DNS-server. Bruges kun af `status` til at advare hvis
+# /etc/resolv.conf er blevet overskrevet midt i en session.
+VPN_DNS=172.31.31.31
+
+# Kodeord og TOTP-seed ligger uden for repoet, så de aldrig kan committes.
+# Filen sources som ren shell og skal sætte VPN_PASSWORD og VPN_TOTP_SECRET.
+# Sæt UFST_PASSWORD_FILE for at pege et andet sted hen.
+UFST_PASSWORD_FIL="${UFST_PASSWORD_FILE:-$HOME/.ufst-password}"
+
+if [[ ! -r $UFST_PASSWORD_FIL ]]; then
+    cat >&2 <<FEJL
+Mangler $UFST_PASSWORD_FIL
+
+Opret den sådan her (umask 077 giver den mode 600 med det samme):
+
+    umask 077
+    cat > $UFST_PASSWORD_FIL <<'FIL'
+VPN_PASSWORD='dit-kodeord'
+VPN_TOTP_SECRET=''
+FIL
+
+VPN_TOTP_SECRET er base32-seed'en fra Microsoft Authenticator. Lad den
+være tom hvis du ikke har en — så spørger scriptet om MFA-koden i stedet.
+FEJL
+    exit 1
+fi
+
+# shellcheck source=/dev/null
+source "$UFST_PASSWORD_FIL"
+
+: "${VPN_PASSWORD:?er ikke sat i $UFST_PASSWORD_FIL}"
+VPN_TOTP_SECRET="${VPN_TOTP_SECRET:-}"
+
+usage() {
+    cat <<EOF
+Brug: ufst-vpn {op|ned|status} [--interaktiv]
+
+  op      Forbind til $VPN_HOST som $VPN_USER
+  ned     Afbryd pænt (SIGINT — så vpnc-script når at rydde ruter og DNS op)
+  status  Vis tunnelens tilstand: adresse, ruter, DNS
+
+  --interaktiv   Tast selv både kodeord og MFA-kode (fallback hvis den
+                 automatiske indfødning driller)
+
+Kodeord og TOTP-seed læses fra ~/.ufst-password. Uden en seed skal den
+6-cifrede MFA-kode tastes ved hvert login.
+EOF
+}
+
+is_up() { pgrep -x openconnect >/dev/null 2>&1; }
+
+vent_på() {
+    # vent_på <betingelse-kommando> <sekunder>
+    local i
+    for ((i = 0; i < $2; i++)); do
+        eval "$1" && return 0
+        sleep 1
+    done
+    return 1
+}
+
+cmd_status() {
+    if ! is_up; then
+        echo "VPN: NEDE"
+        echo "  default-rute: $(ip route show default | head -1)"
+        return 1
+    fi
+
+    echo "VPN: OPPE (pid $(pgrep -x openconnect | tr '\n' ' '))"
+    if ip link show tun0 >/dev/null 2>&1; then
+        echo "  adresse:"
+        ip -br addr show tun0 | sed 's/^/    /'
+        echo "  ruter:"
+        ip route show dev tun0 2>/dev/null | sed 's/^/    /'
+        echo "  DNS:"
+        # vpnc-script registrerer ikke tun0 som et systemd-resolved-link; den
+        # skriver direkte i /etc/resolv.conf. `resolvectl status tun0` er derfor
+        # altid tom og siger intet om hvorvidt DNS faktisk virker.
+        grep -E '^(nameserver|search|domain)' /etc/resolv.conf | sed 's/^/    /'
+
+        if ! grep -q "^nameserver $VPN_DNS\$" /etc/resolv.conf; then
+            echo "    ADVARSEL: UFST's DNS ($VPN_DNS) står ikke i /etc/resolv.conf."
+            echo "    Interne navne resolver ikke. systemd-resolved har sandsynligvis"
+            echo "    regenereret filen midt i sessionen. Ret det med:  ufst-ned && ufst-op"
+        fi
+    else
+        echo "  ADVARSEL: openconnect kører, men tun0 findes ikke"
+    fi
+}
+
+cmd_op() {
+    local interaktiv=${1:-}
+
+    if is_up; then
+        echo "VPN kører allerede."
+        cmd_status
+        return 0
+    fi
+
+    # Godkend sudo FØRST. Ellers kommer fingeraftryks-prompten efter at
+    # MFA-koden er tastet, og en langsom godkendelse kan nå at lade den
+    # 30-sekunders TOTP-kode udløbe inden den sendes.
+    if ! sudo -v; then
+        echo "sudo-godkendelse fejlede." >&2
+        return 1
+    fi
+
+    local args=(
+        --background
+        --useragent=AnyConnect
+        --protocol=anyconnect
+        --user="$VPN_USER"
+    )
+    # BEMÆRK: --no-external-auth fra UFST's udleverede kommando er udeladt med
+    # vilje. Flaget kom først i openconnect v9.00; på v8.20 giver det
+    # "unrecognized option". Det er alligevel et no-op her, da v8.20 aldrig
+    # annoncerer SSO-login over for gatewayen.
+
+    # Slå gatewayens adresse op NU, mens DNS stadig virker, og giv den videre.
+    #
+    # Gatewayen sætter Tunnel-All-DNS, så resolv.conf peger på 172.31.31.31,
+    # der kun kan nås gennem tunnelen. Skal openconnect genforbinde undervejs,
+    # kan den ikke slå $VPN_HOST op: DNS kræver tunnelen, tunnelen kræver DNS.
+    # --resolve bryder den knude uden at hardcode noget, så adressen aldrig
+    # kan blive forældet (i modsætning til en linje i /etc/hosts).
+    local gateway_ip
+    gateway_ip=$(getent ahostsv4 "$VPN_HOST" 2>/dev/null | awk 'NR==1 {print $1}')
+    if [[ -n $gateway_ip ]]; then
+        args+=(--resolve="$VPN_HOST:$gateway_ip")
+        echo "» $VPN_HOST → $gateway_ip"
+    else
+        echo "  ADVARSEL: kunne ikke slå $VPN_HOST op." >&2
+        echo "  Peger /etc/resolv.conf stadig på UFST's DNS efter en uren" >&2
+        echo "  afbrydelse? Tjek med: ufst-vpn status" >&2
+    fi
+
+    if [[ $interaktiv == "--interaktiv" ]]; then
+        echo "» Interaktivt login — tast kodeord og MFA-kode."
+        sudo openconnect "${args[@]}" "$VPN_HOST" || return 1
+
+    elif [[ -n $VPN_TOTP_SECRET ]]; then
+        # Lydløst: kodeord på stdin, MFA-kode genereret lokalt i samme øjeblik
+        # formularen sendes. Intet timing-vindue at ramme forbi.
+        args+=(--passwd-on-stdin --token-mode=totp --token-secret="$VPN_TOTP_SECRET")
+        printf '%s\n' "$VPN_PASSWORD" | sudo openconnect "${args[@]}" "$VPN_HOST" || return 1
+
+    else
+        # Kodeord og kode sendes som to linjer på stdin. openconnect læser
+        # linje 1 til password-feltet og linje 2 til MFA-feltet.
+        #
+        # Koden skal være frisk: den er væk fra prompten til den sendes på
+        # under et sekund, men er den allerede 25 sekunder gammel når du
+        # taster den, når den at udløbe undervejs. Vent på at den skifter.
+        echo "» Vent til koden lige har skiftet i Authenticator, og tast den så."
+        local kode
+        read -rsp "  Microsoft-kode (6 cifre): " kode </dev/tty
+        echo
+        args+=(--passwd-on-stdin)
+        if ! printf '%s\n%s\n' "$VPN_PASSWORD" "$kode" \
+            | sudo openconnect "${args[@]}" "$VPN_HOST"
+        then
+            cat >&2 <<EOF
+
+Login fejlede.
+
+Den hyppigste årsag er at koden nåede at udløbe. TOTP-vinduet er 30
+sekunder, og openconnect prøver formularen igen med en tom pipe — det er
+det der giver "fgets (stdin)"-fejlen bagefter. Prøv igen med en frisk kode.
+
+Bliver det ved, så test om indfødningen er problemet:
+
+    ufst-op --interaktiv
+
+Varig løsning: sæt VPN_TOTP_SECRET i
+$UFST_PASSWORD_FIL
+Så genererer openconnect koden selv i samme øjeblik formularen sendes,
+og timing-problemet forsvinder helt.
+EOF
+            return 1
+        fi
+    fi
+
+    # openconnect forker først til baggrunden når auth er gennemført
+    if vent_på 'ip link show tun0 >/dev/null 2>&1' 15; then
+        echo
+        cmd_status
+    else
+        echo "tun0 kom ikke op inden for 15s." >&2
+        return 1
+    fi
+}
+
+cmd_ned() {
+    if ! is_up; then
+        echo "VPN kører ikke."
+        return 0
+    fi
+
+    # SIGINT, ikke SIGKILL: så når vpnc-script at rydde ruter og DNS op.
+    # (SIGINT får samtidig openconnect til at logge ud hos serveren, så
+    # sessionen destrueres — relevant hvis session-genbrug nogensinde
+    # skal prøves igen; dér ville SIGTERM være det rigtige.)
+    sudo pkill -SIGINT -x openconnect
+
+    if vent_på '! pgrep -x openconnect >/dev/null 2>&1' 10; then
+        echo "Afbrudt — ruter og DNS ryddet op."
+    else
+        echo "openconnect svarer ikke på SIGINT." >&2
+        echo "pkill -9 virker, men efterlader ruter og DNS i uorden." >&2
+        return 1
+    fi
+}
+
+case "${1:-}" in
+    op)     cmd_op "${2:-}" ;;
+    ned)    cmd_ned ;;
+    status) cmd_status ;;
+    ""|-h|--help|help) usage ;;
+    *)      echo "Ukendt kommando: $1" >&2; echo >&2; usage >&2; exit 2 ;;
+esac

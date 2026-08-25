@@ -1,0 +1,11 @@
+#!/bin/bash
+# UFST/SKAT VPN — login
+#
+#   ufst-op                Forbind. Kodeordet kommer fra ufst-vpn;
+#                          MFA-koden tastes (eller genereres, hvis
+#                          VPN_TOTP_SECRET er sat).
+#   ufst-op --interaktiv   Tast selv både kodeord og MFA-kode
+#
+# Konfiguration (brugernavn, kodeord, TOTP-seed) ligger i ufst-vpn.
+
+exec "$(dirname "$(readlink -f "$0")")/ufst-vpn" op "$@"

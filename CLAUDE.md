@@ -27,7 +27,7 @@ Three files are symlinked into `~/.bash_it/` by `scripts/setup_bash-it.bash`:
 Shell functions live in `lib/custom.bash`; aliases in `aliases/custom.aliases.bash`. Both are sourced automatically by bash-it on every shell start.
 
 **2. Utility scripts** (`bin/`, `local-bin/`)  
-Scripts in `bin/` are invoked by GNOME custom keybindings (configured in `scripts/setup_os_customization.bash`). Most rely on `xdotool` to automate X11 window interactions. `local-bin/update_firmware.sh` is symlinked to `/usr/local/bin/updatefirmware` by `scripts/setup_scripts.bash`.
+Scripts in `bin/` are invoked by GNOME custom keybindings (configured in `scripts/setup_os_customization.bash`). Most rely on `xdotool` to automate X11 window interactions. `local-bin/update_firmware.sh` is symlinked to `/usr/local/bin/updatefirmware` by `scripts/setup_scripts.bash`, which also symlinks everything in `local-bin/ufst/` into `~/.local/bin/`.
 
 ## Key scripts
 
@@ -40,6 +40,9 @@ Scripts in `bin/` are invoked by GNOME custom keybindings (configured in `script
 | `local-bin/update_firmware.sh` | — | Interactive fwupdmgr wrapper |
 | `local-bin/checkbackup.sh` | — | Groovy script validating KORTX/FORMUE backup files |
 | `local-bin/better_history.sh` | — | One-time setup: writes history config to `/etc/bash.bashrc` |
+| `local-bin/ufst/ufst-vpn` | — | UFST VPN toggle (`op`/`ned`/`status`); `ufst-op` and `ufst-ned` are thin wrappers |
+| `local-bin/ufst/ufst-ca` | — | Syncs SKAT's internal CAs into both the system and Citrix trust stores |
+| `local-bin/ufst/ufst-citrix` | — | Launches published Citrix apps by name, no `.ica` files |
 
 ## Gradle workflow
 
@@ -52,6 +55,16 @@ Scripts in `bin/` are invoked by GNOME custom keybindings (configured in `script
 - New standalone scripts → `bin/` (add a matching keybinding in `scripts/setup_os_customization.bash` if needed)
 
 Changes to `aliases/custom.aliases.bash` or `lib/custom.bash` take effect in new shell sessions (or `source ~/.bashrc`). No re-running of `install.sh` needed — the symlinks are already in place.
+
+## UFST tooling (`local-bin/ufst/`)
+
+Scripts for Brian's work at UFST/SKAT, symlinked into `~/.local/bin/` (already on PATH via `.bashrc`).
+
+**The password is not in this repo.** `ufst-vpn` sources `~/.ufst-password` (mode 600), which sets `VPN_PASSWORD` and `VPN_TOTP_SECRET`. Override the location with `$UFST_PASSWORD_FILE`. The file lives in `$HOME` rather than here so that no `git add -f`, IDE "add all", or repo-wide archiving can ever pick it up; `.gitignore` carries a matching rule purely as a second line of defence. Missing file → the script prints exactly what to create and exits.
+
+`VPN_TOTP_SECRET` is empty and stays that way until UFST registers an authentication method on the account — enrolling in Authenticator to obtain the seed is currently blocked by their Entra configuration. Until then `ufst-op` prompts for the 6-digit code.
+
+`ufst-ca` must be re-run whenever SKAT rotates their issuing CAs; the symptom is a sudden certificate error on internal sites *or* Citrix failing to reach StoreFront. It keeps `/usr/local/share/ca-certificates/` and Citrix's own `/opt/Citrix/ICAClient/keystore/cacerts/` in sync, since Citrix does not consult the system store.
 
 ## Backup & restore
 

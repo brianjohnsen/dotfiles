@@ -1,0 +1,9 @@
+#!/bin/bash
+# UFST/SKAT VPN — logoff
+#
+#   ufst-ned    Afbryd forbindelsen pænt
+#
+# Sender SIGINT, ikke SIGKILL, så vpnc-script når at rydde ruter og DNS op.
+# Efter afbrydelse virker Claude Code og almindelig internetadgang igen.
+
+exec "$(dirname "$(readlink -f "$0")")/ufst-vpn" ned "$@"

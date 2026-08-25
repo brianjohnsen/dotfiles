@@ -1,0 +1,114 @@
+#!/bin/bash
+# UFST/SKAT Citrix — start publicerede apps uden at hente .ica-filer.
+#
+#   ufst-citrix                 Vælg app fra en nummereret liste
+#   ufst-citrix <søgeord>       Start den app hvis navn indeholder søgeordet
+#   ufst-citrix --liste         Vis apps uden at starte noget
+#   ufst-citrix --opdater       Hent app-listen forfra
+#
+# App-listen caches, fordi `storebrowse -E` åbner et login-vindue og tager
+# et par minutter. Selve starten bruger kun det cachede ressource-id.
+
+set -euo pipefail
+shopt -s nullglob
+
+STORE=https://front.ccta.dk/Citrix/storefront/discovery
+SB=/opt/Citrix/ICAClient/util/storebrowse
+CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/ufst-citrix.tsv"
+
+usage() { sed -n '2,9p' "$(readlink -f "$0")" | sed 's/^# \?//'; }
+
+kraev_vpn() {
+    if ! pgrep -x openconnect >/dev/null 2>&1 && ! ip route get 172.20.248.52 2>/dev/null | grep -q tun0; then
+        # Koncern-wifi når StoreFront direkte; VPN er kun nødvendig udefra.
+        if ! timeout 5 getent hosts front.ccta.dk >/dev/null 2>&1; then
+            echo "front.ccta.dk kan ikke nås. Kør 'ufst-op', eller gå på koncern-wifi." >&2
+            exit 1
+        fi
+    fi
+}
+
+hent_liste() {
+    kraev_vpn
+    echo "Henter app-listen (åbner login-vindue, tager et par minutter)..." >&2
+    mkdir -p "$(dirname "$CACHE")"
+
+    # Linjerne ser sådan ud:  'ressource-id'\t'venligt navn'\t'mappe'\t''
+    # Alt andet fra storebrowse (WebKit-advarsler, "Load finished..") frasorteres
+    # ved kun at tage linjer der starter med et enkeltcitat.
+    if ! "$SB" -E "$STORE" 2>/dev/null \
+        | sed -n "s/^'\([^']*\)'[[:space:]]*'\([^']*\)'.*/\1\t\2/p" > "$CACHE.tmp"; then
+        rm -f "$CACHE.tmp"
+        echo "Kunne ikke hente listen." >&2
+        exit 1
+    fi
+
+    if [[ ! -s $CACHE.tmp ]]; then
+        rm -f "$CACHE.tmp"
+        echo "Listen kom tom tilbage — blev login gennemført?" >&2
+        exit 1
+    fi
+
+    mv "$CACHE.tmp" "$CACHE"
+    echo "$(wc -l < "$CACHE") apps gemt i $CACHE" >&2
+}
+
+sikr_liste() {
+    [[ -s $CACHE ]] || hent_liste
+}
+
+# Sorteret efter venligt navn, så listen er til at finde rundt i. Nummereringen
+# skal matche 'sed -n "${valg}p"' nedenfor, så begge bruger samme sortering.
+vis_liste() {
+    sort -t$'\t' -k2 "$CACHE" | cut -f2 | nl -w3 -s'. '
+}
+
+start() {
+    local id=$1 navn=$2
+    kraev_vpn
+    echo "Starter $navn ..."
+    "$SB" -L "$id" "$STORE"
+}
+
+# ------------------------------------------------------------------ main
+case "${1:-}" in
+    -h|--help)  usage; exit 0 ;;
+    --opdater)  hent_liste; exit 0 ;;
+    --liste)    sikr_liste; vis_liste; exit 0 ;;
+esac
+
+sikr_liste
+
+if [[ -n ${1:-} ]]; then
+    # Søgeord: match på det venlige navn, uafhængigt af store/små bogstaver.
+    mapfile -t traef < <(grep -i -- "$1" "$CACHE" || true)
+
+    if (( ${#traef[@]} == 0 )); then
+        echo "Ingen app matcher '$1'. Se listen med: ufst-citrix --liste" >&2
+        exit 1
+    fi
+
+    if (( ${#traef[@]} > 1 )); then
+        echo "Flere apps matcher '$1':"
+        printf '%s\n' "${traef[@]}" | cut -f2 | sed 's/^/  /'
+        echo "Vær mere specifik." >&2
+        exit 1
+    fi
+
+    start "$(cut -f1 <<<"${traef[0]}")" "$(cut -f2 <<<"${traef[0]}")"
+    exit 0
+fi
+
+# Ingen argumenter: nummereret vælger
+vis_liste
+echo
+read -rp "Nummer (tom for at afbryde): " valg
+[[ -n $valg ]] || exit 0
+
+linje=$(sort -t$'\t' -k2 "$CACHE" | sed -n "${valg}p")
+if [[ -z $linje ]]; then
+    echo "Ugyldigt nummer." >&2
+    exit 1
+fi
+
+start "$(cut -f1 <<<"$linje")" "$(cut -f2 <<<"$linje")"
