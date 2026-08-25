@@ -1,0 +1,70 @@
+#!/bin/bash
+# UFST/SKAT — vis den aktuelle MFA-kode ud fra TOTP-seed'en.
+#
+#   ufst-totp          Kode plus hvor mange sekunder den har tilbage
+#   ufst-totp --kode   Kun cifrene, til brug i andre kommandoer
+#
+# Bruges til at bekræfte seed'en under registreringen hos Microsoft, og
+# bagefter som fallback hvis openconnect ikke selv rammer MFA-feltet.
+
+set -uo pipefail
+
+UFST_PASSWORD_FIL="${UFST_PASSWORD_FILE:-$HOME/.ufst-password}"
+
+if [[ ! -r $UFST_PASSWORD_FIL ]]; then
+    echo "Mangler $UFST_PASSWORD_FIL — se 'ufst-vpn --help'." >&2
+    exit 1
+fi
+
+# shellcheck source=/dev/null
+source "$UFST_PASSWORD_FIL"
+VPN_TOTP_SECRET="${VPN_TOTP_SECRET:-}"
+
+if [[ -z $VPN_TOTP_SECRET ]]; then
+    cat >&2 <<FEJL
+VPN_TOTP_SECRET er tom i $UFST_PASSWORD_FIL.
+
+Seed'en hentes hos Microsoft:
+  1. https://mysignins.microsoft.com/security-info
+  2. Add sign-in method -> Authenticator app
+  3. "I want to use a different authenticator app"
+  4. Ved QR-koden: "Can't scan image?" -> Secret key
+
+Skriv den derefter ind som:
+  VPN_TOTP_SECRET='base32:DINSEED'
+FEJL
+    exit 1
+fi
+
+TOTP_SECRET="$VPN_TOTP_SECRET" python3 - "${1:-}" <<'PY'
+import base64, hashlib, hmac, os, struct, sys, time
+
+kun_kode = sys.argv[1] == "--kode" if len(sys.argv) > 1 else False
+
+seed = os.environ["TOTP_SECRET"].strip()
+
+# openconnect kræver "base32:" foran hemmeligheden. Her strippes det igen,
+# så nøjagtig samme værdi kan stå ét sted og bruges begge steder.
+if seed.lower().startswith("base32:"):
+    seed = seed[len("base32:"):]
+
+# Microsoft viser seed'en i grupper med mellemrum og uden udfyldningstegn.
+seed = seed.replace(" ", "").replace("-", "").upper()
+seed += "=" * (-len(seed) % 8)
+
+try:
+    noegle = base64.b32decode(seed, casefold=True)
+except Exception as fejl:
+    sys.exit(f"Kunne ikke afkode seed'en som base32: {fejl}")
+
+# Standard TOTP som Entra bruger: SHA1, 30 sekunders vindue, 6 cifre.
+nu = int(time.time())
+digest = hmac.new(noegle, struct.pack(">Q", nu // 30), hashlib.sha1).digest()
+offset = digest[-1] & 0x0F
+kode = (struct.unpack(">I", digest[offset:offset + 4])[0] & 0x7FFFFFFF) % 1_000_000
+
+if kun_kode:
+    print(f"{kode:06d}")
+else:
+    print(f"{kode:06d}   ({30 - nu % 30}s tilbage)")
+PY

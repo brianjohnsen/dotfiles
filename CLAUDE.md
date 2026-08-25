@@ -43,6 +43,7 @@ Scripts in `bin/` are invoked by GNOME custom keybindings (configured in `script
 | `local-bin/ufst/ufst-vpn` | — | UFST VPN toggle (`op`/`ned`/`status`); `ufst-op` and `ufst-ned` are thin wrappers |
 | `local-bin/ufst/ufst-ca` | — | Syncs SKAT's internal CAs into both the system and Citrix trust stores |
 | `local-bin/ufst/ufst-citrix` | — | Launches published Citrix apps by name, no `.ica` files |
+| `local-bin/ufst/ufst-totp` | — | Prints the current MFA code from the TOTP seed |
 
 ## Gradle workflow
 
@@ -62,7 +63,11 @@ Scripts for Brian's work at UFST/SKAT, symlinked into `~/.local/bin/` (already o
 
 **The password is not in this repo.** `ufst-vpn` sources `~/.ufst-password` (mode 600), which sets `VPN_PASSWORD` and `VPN_TOTP_SECRET`. Override the location with `$UFST_PASSWORD_FILE`. The file lives in `$HOME` rather than here so that no `git add -f`, IDE "add all", or repo-wide archiving can ever pick it up; `.gitignore` carries a matching rule purely as a second line of defence. Missing file → the script prints exactly what to create and exits.
 
-`VPN_TOTP_SECRET` is empty and stays that way until UFST registers an authentication method on the account — enrolling in Authenticator to obtain the seed is currently blocked by their Entra configuration. Until then `ufst-op` prompts for the 6-digit code.
+`VPN_TOTP_SECRET` holds the base32 seed from a "different authenticator app" registration in Entra (mysignins.microsoft.com → Add sign-in method), added alongside the existing Microsoft Authenticator registration rather than replacing it. With it set, `ufst-op` connects with no prompts at all.
+
+Store the seed exactly as Microsoft displays it; `ufst-vpn` prepends the `base32:` prefix that openconnect requires. Without that prefix openconnect reads the string as raw bytes and generates wrong codes with no error — just a login that gets rejected.
+
+`ufst-totp` prints the current code from the same seed. It exists to confirm the seed during enrolment, and as a fallback for typing the code by hand if openconnect ever fails to recognise the ASA's second form field as a token field.
 
 `ufst-ca` must be re-run whenever SKAT rotates their issuing CAs; the symptom is a sudden certificate error on internal sites *or* Citrix failing to reach StoreFront. It keeps `/usr/local/share/ca-certificates/` and Citrix's own `/opt/Citrix/ICAClient/keystore/cacerts/` in sync, since Citrix does not consult the system store.
 

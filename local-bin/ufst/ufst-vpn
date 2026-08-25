@@ -155,7 +155,15 @@ cmd_op() {
     elif [[ -n $VPN_TOTP_SECRET ]]; then
         # Lydløst: kodeord på stdin, MFA-kode genereret lokalt i samme øjeblik
         # formularen sendes. Intet timing-vindue at ramme forbi.
-        args+=(--passwd-on-stdin --token-mode=totp --token-secret="$VPN_TOTP_SECRET")
+        #
+        # openconnect kræver "base32:" foran en base32-hemmelighed. Mangler
+        # præfikset, tolkes strengen som rå bytes, og koderne bliver forkerte
+        # uden nogen fejl — bare et login der afvises. Sæt det på hvis det
+        # ikke allerede står der, så begge skrivemåder virker.
+        local seed=$VPN_TOTP_SECRET
+        [[ $seed == base32:* ]] || seed="base32:$seed"
+
+        args+=(--passwd-on-stdin --token-mode=totp --token-secret="$seed")
         printf '%s\n' "$VPN_PASSWORD" | sudo openconnect "${args[@]}" "$VPN_HOST" || return 1
 
     else
