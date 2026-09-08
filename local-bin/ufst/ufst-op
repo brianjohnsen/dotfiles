@@ -5,6 +5,8 @@
 #                          MFA-koden tastes (eller genereres, hvis
 #                          VPN_TOTP_SECRET er sat).
 #   ufst-op --interaktiv   Tast selv både kodeord og MFA-kode
+#   ufst-op --apps         Start også Teams- og Outlook-PWA'erne, når
+#                          tunnelen er oppe
 #
 # Konfiguration (brugernavn, kodeord, TOTP-seed) ligger i ufst-vpn.
 

@@ -1,7 +1,8 @@
 #!/bin/bash
 # UFST/SKAT VPN — logoff
 #
-#   ufst-ned    Afbryd forbindelsen pænt
+#   ufst-ned           Afbryd forbindelsen pænt
+#   ufst-ned --apps    Luk også Teams- og Outlook-PWA'erne først
 #
 # Sender SIGINT, ikke SIGKILL, så vpnc-script når at rydde ruter og DNS op.
 # Efter afbrydelse virker Claude Code og almindelig internetadgang igen.

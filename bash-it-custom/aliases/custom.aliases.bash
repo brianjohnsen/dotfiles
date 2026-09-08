@@ -75,6 +75,10 @@ alias wu='nmcli radio wifi on'
 alias wifijohnsen='nmcli c up johnsen'
 alias wifikoncern='nmcli c up koncern-wifi'
 
+# UFST VPN with Teams- and Outlook-PWA's
+alias opufstapps='ufst-op --apps'
+alias nedufstapps='ufst-ned --apps'
+
 ########################################################################################################################
 ## From bash-it -> osx.aliases.bash
 ########################################################################################################################

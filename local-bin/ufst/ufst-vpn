@@ -16,6 +16,16 @@ VPN_HOST=hap.skat.dk
 # /etc/resolv.conf er blevet overskrevet midt i en session.
 VPN_DNS=172.31.31.31
 
+# Chrome-PWA'er der hører til UFST-arbejdet. Startes og lukkes kun med --apps.
+#
+# Nøglen er Chrome's app-id. Den optræder to steder: i .desktop-filens navn
+# (~/.local/share/applications/chrome-<id>-Default.desktop) og som vinduets
+# WM_CLASS (crx_<id>). Begge bruges nedenfor.
+UFST_APPS=(
+    "Teams:ompifgpmddkgmclendfeacglnodjjndh"
+    "Outlook:eoficlgicibekocmfdomjbfnjmehnhcd"
+)
+
 # Kodeord og TOTP-seed ligger uden for repoet, så de aldrig kan committes.
 # Filen sources som ren shell og skal sætte VPN_PASSWORD og VPN_TOTP_SECRET.
 # Sæt UFST_PASSWORD_FILE for at pege et andet sted hen.
@@ -46,13 +56,19 @@ source "$UFST_PASSWORD_FIL"
 VPN_TOTP_SECRET="${VPN_TOTP_SECRET:-}"
 
 usage() {
+    local navne
+    navne=$(IFS=,; echo "${UFST_APPS[*]%%:*}")
+    navne=${navne//,/, }
+
     cat <<EOF
-Brug: ufst-vpn {op|ned|status} [--interaktiv]
+Brug: ufst-vpn {op|ned|status} [--apps] [--interaktiv]
 
   op      Forbind til $VPN_HOST som $VPN_USER
   ned     Afbryd pænt (SIGINT — så vpnc-script når at rydde ruter og DNS op)
   status  Vis tunnelens tilstand: adresse, ruter, DNS
 
+  --apps         Start (op) eller luk (ned) UFST-PWA'erne: $navne.
+                 Uden flaget røres ingen vinduer.
   --interaktiv   Tast selv både kodeord og MFA-kode (fallback hvis den
                  automatiske indfødning driller)
 
@@ -71,6 +87,79 @@ vent_på() {
         sleep 1
     done
     return 1
+}
+
+# Vindues-id'er for en PWA. Chrome starter ikke en proces pr. PWA — en
+# `--app-id`-kommando afleverer bare startordren til den kørende browser og
+# dør igen. Derfor er der intet at pgrep'e efter; vinduets WM_CLASS er det
+# eneste håndtag på en enkelt PWA.
+#
+# BEMÆRK --classname, ikke --class. En PWA's WM_CLASS er parret
+# ("crx_<app-id>", "Google-chrome"), og xdotool's --class matcher det ANDET
+# felt — som alle Chrome-vinduer deler. --class "crx_..." finder derfor
+# ingenting, og --class Chrome ville ramme hele browseren. Ankrene sikrer at
+# app-id'et matches præcist og ikke som delstreng.
+app_vinduer() {
+    xdotool search --classname "^crx_$1\$" 2>/dev/null
+}
+
+har_xdotool() {
+    if ! command -v xdotool >/dev/null 2>&1; then
+        echo "  xdotool mangler — kan ikke håndtere PWA-vinduer (apt install xdotool)" >&2
+        return 1
+    fi
+}
+
+start_apps() {
+    har_xdotool || return 0
+
+    local app navn id
+    for app in "${UFST_APPS[@]}"; do
+        navn=${app%%:*}
+        id=${app#*:}
+
+        if [[ -n $(app_vinduer "$id") ]]; then
+            echo "» $navn kører allerede"
+            continue
+        fi
+
+        # gtk-launch tager .desktop-filens id uden endelsen. Afkoblet, fordi
+        # den bliver hængende så længe appen lever.
+        gtk-launch "chrome-${id}-Default" >/dev/null 2>&1 &
+        echo "» starter $navn"
+    done
+}
+
+# Lukning sker med Chromes EGEN luk-genvej, ikke med `xdotool windowclose`.
+# Det er ikke en smagssag: windowclose sender WM_DELETE_WINDOW, og på det
+# signal fjerner Chrome kun vinduet — appen bliver hængende i en tilstand
+# hvor et nyt `--app-id`-kald bare bliver slugt (rc=0, "Åbner i eksisterende
+# browsersession", intet vindue). Teams kunne derefter først åbnes igen efter
+# en fuld genstart af Chrome. Verificeret: windowclose → kan ikke genåbnes,
+# ctrl+shift+w → kan genåbnes med det samme, i flere runder for begge apps.
+#
+# Prisen er at vinduet skal have fokus for at kunne modtage tasten, så
+# fokus gemmes og gives tilbage bagefter — samme mønster som
+# bin/reload-chrome.sh.
+luk_apps() {
+    har_xdotool || return 0
+
+    local app navn id wid oprindeligt
+    oprindeligt=$(xdotool getactivewindow 2>/dev/null)
+
+    for app in "${UFST_APPS[@]}"; do
+        navn=${app%%:*}
+        id=${app#*:}
+
+        for wid in $(app_vinduer "$id"); do
+            xdotool windowactivate --sync "$wid" 2>/dev/null || continue
+            xdotool key --clearmodifiers ctrl+shift+w
+            echo "» lukker $navn"
+        done
+    done
+
+    [[ -n $oprindeligt ]] && xdotool windowactivate --sync "$oprindeligt" 2>/dev/null
+    return 0
 }
 
 cmd_status() {
@@ -103,11 +192,19 @@ cmd_status() {
 }
 
 cmd_op() {
-    local interaktiv=${1:-}
+    local interaktiv="" apps="" arg
+    for arg in "$@"; do
+        case $arg in
+            --interaktiv) interaktiv=1 ;;
+            --apps)       apps=1 ;;
+            *) echo "Ukendt flag til op: $arg" >&2; return 2 ;;
+        esac
+    done
 
     if is_up; then
         echo "VPN kører allerede."
         cmd_status
+        [[ -n $apps ]] && start_apps
         return 0
     fi
 
@@ -148,7 +245,7 @@ cmd_op() {
         echo "  afbrydelse? Tjek med: ufst-vpn status" >&2
     fi
 
-    if [[ $interaktiv == "--interaktiv" ]]; then
+    if [[ -n $interaktiv ]]; then
         echo "» Interaktivt login — tast kodeord og MFA-kode."
         sudo openconnect "${args[@]}" "$VPN_HOST" || return 1
 
@@ -206,6 +303,8 @@ EOF
     if vent_på 'ip link show tun0 >/dev/null 2>&1' 15; then
         echo
         cmd_status
+        # Først nu kan de nå Microsoft gennem tunnelen.
+        [[ -n $apps ]] && { echo; start_apps; }
     else
         echo "tun0 kom ikke op inden for 15s." >&2
         return 1
@@ -213,6 +312,19 @@ EOF
 }
 
 cmd_ned() {
+    local apps="" arg
+    for arg in "$@"; do
+        case $arg in
+            --apps) apps=1 ;;
+            *) echo "Ukendt flag til ned: $arg" >&2; return 2 ;;
+        esac
+    done
+
+    # Før tunnelen ryger, så de ikke sidder og hamrer på en forbindelse der
+    # er ved at forsvinde. Også hvis VPN'en slet ikke kørte — flaget skal
+    # gøre det, det siger.
+    [[ -n $apps ]] && luk_apps
+
     if ! is_up; then
         echo "VPN kører ikke."
         return 0
@@ -234,8 +346,8 @@ cmd_ned() {
 }
 
 case "${1:-}" in
-    op)     cmd_op "${2:-}" ;;
-    ned)    cmd_ned ;;
+    op)     cmd_op "${@:2}" ;;
+    ned)    cmd_ned "${@:2}" ;;
     status) cmd_status ;;
     ""|-h|--help|help) usage ;;
     *)      echo "Ukendt kommando: $1" >&2; echo >&2; usage >&2; exit 2 ;;

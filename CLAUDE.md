@@ -16,6 +16,14 @@ cd ~/.dotfiles
 
 `install.sh` runs each setup script as a subprocess (with `set -euo pipefail`), sequentially: apt packages → Chrome → Docker → 1Password CLI → 1Password browser integration → Claude Code → snap packages → default apps → JetBrains Toolbox → bash-it → SDKMAN → git-open → GNOME keybindings → script links. All output is tee'd to `install.log`.
 
+## Commit messages
+
+Ultra short and in English: one imperative line, no body. `Generate the VPN MFA
+code locally`, not a paragraph explaining why. A body only when the change is
+large enough that the diff genuinely can't be read without one (see the install
+overhaul and the backup kit). Brian runs `git commit` himself — the message is
+handed to him, not committed.
+
 ## Architecture: two layers
 
 **1. bash-it customization** (`bash-it-custom/`)  
@@ -40,7 +48,7 @@ Scripts in `bin/` are invoked by GNOME custom keybindings (configured in `script
 | `local-bin/update_firmware.sh` | — | Interactive fwupdmgr wrapper |
 | `local-bin/checkbackup.sh` | — | Groovy script validating KORTX/FORMUE backup files |
 | `local-bin/better_history.sh` | — | One-time setup: writes history config to `/etc/bash.bashrc` |
-| `local-bin/ufst/ufst-vpn` | — | UFST VPN toggle (`op`/`ned`/`status`); `ufst-op` and `ufst-ned` are thin wrappers |
+| `local-bin/ufst/ufst-vpn` | — | UFST VPN toggle (`op`/`ned`/`status`, `--apps`); `ufst-op` and `ufst-ned` are thin wrappers |
 | `local-bin/ufst/ufst-ca` | — | Syncs SKAT's internal CAs into both the system and Citrix trust stores |
 | `local-bin/ufst/ufst-citrix` | — | Launches published Citrix apps by name, no `.ica` files |
 | `local-bin/ufst/ufst-totp` | — | Prints the current MFA code from the TOTP seed |
@@ -68,6 +76,34 @@ Scripts for Brian's work at UFST/SKAT, symlinked into `~/.local/bin/` (already o
 Store the seed exactly as Microsoft displays it; `ufst-vpn` prepends the `base32:` prefix that openconnect requires. Without that prefix openconnect reads the string as raw bytes and generates wrong codes with no error — just a login that gets rejected.
 
 `ufst-totp` prints the current code from the same seed. It exists to confirm the seed during enrolment, and as a fallback for typing the code by hand if openconnect ever fails to recognise the ASA's second form field as a token field.
+
+`--apps` on `ufst-op`/`ufst-ned` starts and closes the Teams and Outlook PWAs
+alongside the tunnel. It is opt-in: without the flag neither command touches a
+window. The `ufstop`/`ufstned` aliases (no hyphen, so they sit next to the
+hyphenated scripts without shadowing them) are the everyday form that passes
+`--apps`. The app-ids live in the `UFST_APPS` array in `ufst-vpn`.
+
+The handling is window-based, not process-based, and has to be: Chrome runs no
+process per PWA — `google-chrome --app-id=…` hands the launch to the running
+browser and exits — so `pkill` would take all of Chrome with it. Each PWA window
+carries `WM_CLASS=crx_<app-id>` (the `StartupWMClass` of its
+`~/.local/share/applications/chrome-<app-id>-Default.desktop`), which `xdotool`
+can target. This is X11-only, like everything else in `bin/`.
+
+Closing has to use Chrome's own close shortcut (activate the window, send
+`ctrl+shift+w`), not `xdotool windowclose`. On the `WM_DELETE_WINDOW` that
+windowclose sends, Chrome drops the window but leaves the app in a state where
+the next `--app-id` launch is silently swallowed: rc=0, "Åbner i eksisterende
+browsersession", no window, and Teams stays unopenable until Chrome itself is
+restarted. Verified both ways, several rounds, both apps. The cost is that the
+window must hold focus to receive the key, so `luk_apps` saves and restores the
+active window — the same dance as `bin/reload-chrome.sh`.
+
+So if a PWA won't open and `gtk-launch` exits 0 with no window, the install is
+almost certainly fine: something closed it with `WM_DELETE_WINDOW`.
+`pkill -TERM -x chrome` (clean shutdown, session restored on next start) clears
+it. Closing all windows is *not* enough — Chrome keeps running with no windows
+("Continue running background apps"), so the browser process survives.
 
 `ufst-ca` must be re-run whenever SKAT rotates their issuing CAs; the symptom is a sudden certificate error on internal sites *or* Citrix failing to reach StoreFront. It keeps `/usr/local/share/ca-certificates/` and Citrix's own `/opt/Citrix/ICAClient/keystore/cacerts/` in sync, since Citrix does not consult the system store.
 
