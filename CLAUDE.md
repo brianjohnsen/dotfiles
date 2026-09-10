@@ -95,9 +95,18 @@ Closing has to use Chrome's own close shortcut (activate the window, send
 windowclose sends, Chrome drops the window but leaves the app in a state where
 the next `--app-id` launch is silently swallowed: rc=0, "Åbner i eksisterende
 browsersession", no window, and Teams stays unopenable until Chrome itself is
-restarted. Verified both ways, several rounds, both apps. The cost is that the
-window must hold focus to receive the key, so `luk_apps` saves and restores the
-active window — the same dance as `bin/reload-chrome.sh`.
+restarted. Verified both ways, several rounds, both apps.
+
+The cost is focus. `xdotool key` goes through XTEST to whatever holds input focus
+at that instant, and `windowactivate --sync` only waits for the WM's
+`_NET_ACTIVE_WINDOW` — Chrome takes keyboard focus a moment later. So
+`luk_vindue` *confirms* `getwindowfocus` matches the target before firing and
+skips the window otherwise: a stray ctrl+shift+w in another Chrome window would
+close that window and all its tabs. Even with focus confirmed the key is
+occasionally not turned into a close (both apps, usually right after opening),
+hence three attempts before reporting failure — and it reports honestly, rather
+than printing "lukker" for a window that is still there. `luk_apps` saves and
+restores the originally active window, the same dance as `bin/reload-chrome.sh`.
 
 So if a PWA won't open and `gtk-launch` exits 0 with no window, the install is
 almost certainly fine: something closed it with `WM_DELETE_WINDOW`.

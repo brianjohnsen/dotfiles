@@ -21,9 +21,11 @@ VPN_DNS=172.31.31.31
 # Nøglen er Chrome's app-id. Den optræder to steder: i .desktop-filens navn
 # (~/.local/share/applications/chrome-<id>-Default.desktop) og som vinduets
 # WM_CLASS (crx_<id>). Begge bruges nedenfor.
+# Rækkefølgen er bevidst: start_apps åbner dem oppefra og ned, og den sidste
+# ender øverst. Teams skal ligge forrest, så den står nederst her.
 UFST_APPS=(
-    "Teams:ompifgpmddkgmclendfeacglnodjjndh"
     "Outlook:eoficlgicibekocmfdomjbfnjmehnhcd"
+    "Teams:ompifgpmddkgmclendfeacglnodjjndh"
 )
 
 # Kodeord og TOTP-seed ligger uden for repoet, så de aldrig kan committes.
@@ -127,8 +129,47 @@ start_apps() {
         # den bliver hængende så længe appen lever.
         gtk-launch "chrome-${id}-Default" >/dev/null 2>&1 &
         echo "» starter $navn"
+
+        # Vent på vinduet før næste app startes. Uden det er begge launches i
+        # luften samtidig, og hvem der ender øverst bliver et kapløb — så
+        # rækkefølgen i UFST_APPS ville ikke betyde noget. En timeout advarer
+        # kun; så blokerer én app der driller ikke de andre.
+        vent_på "[[ -n \$(app_vinduer $id) ]]" 30 \
+            || echo "  $navn kom ikke op inden for 30s" >&2
     done
 }
+
+# Lukker ét vindue med Chromes luk-genvej. Returnerer 0 når vinduet faktisk
+# er væk.
+#
+# Fyr ALDRIG tasten uden bekræftet input-fokus. `xdotool key` går via XTEST
+# til det vindue der har fokus i netop det øjeblik, og ctrl+shift+w i et
+# forkert Chrome-vindue lukker det vindue med alle dets faner.
+# `windowactivate --sync` venter kun på WM'ens _NET_ACTIVE_WINDOW; Chrome
+# tager tastatur-fokus et øjeblik senere, og det hul er nok til at ramme
+# forbi. (--window kan ikke bruges i stedet: den vej sender XSendEvent, og
+# Chrome smider syntetiske events med det flag væk.)
+#
+# Selv med fokus på plads bliver tasten indimellem ikke omsat til en lukning
+# — set på både Teams og Outlook, oftest lige efter at vinduet er åbnet. Så
+# tre forsøg, og først derefter en fejl.
+luk_vindue() {
+    local wid=$1
+
+    for _ in 1 2 3; do
+        findes "$wid" || return 0
+
+        xdotool windowactivate --sync "$wid" 2>/dev/null || return 1
+        vent_på "[[ \$(xdotool getwindowfocus 2>/dev/null) == $wid ]]" 5 || return 1
+
+        xdotool key --clearmodifiers ctrl+shift+w
+        vent_på "! findes $wid" 3 && return 0
+    done
+
+    return 1
+}
+
+findes() { xdotool getwindowname "$1" >/dev/null 2>&1; }
 
 # Lukning sker med Chromes EGEN luk-genvej, ikke med `xdotool windowclose`.
 # Det er ikke en smagssag: windowclose sender WM_DELETE_WINDOW, og på det
@@ -152,9 +193,11 @@ luk_apps() {
         id=${app#*:}
 
         for wid in $(app_vinduer "$id"); do
-            xdotool windowactivate --sync "$wid" 2>/dev/null || continue
-            xdotool key --clearmodifiers ctrl+shift+w
-            echo "» lukker $navn"
+            if luk_vindue "$wid"; then
+                echo "» lukker $navn"
+            else
+                echo "  $navn lukkede ikke" >&2
+            fi
         done
     done
 
