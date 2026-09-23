@@ -19,6 +19,10 @@ alias restore='bash ~/.dotfiles/backup/restore.sh'
 alias ll='ls -lah'
 alias open='openFile'
 
+## Claude Code
+alias clc='claude --continue'
+alias clr='claude --resume'
+
 ## Gradle
 #alias gw='./gradlew'
 alias gw='gradlewFromParents'
