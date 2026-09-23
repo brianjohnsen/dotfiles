@@ -76,7 +76,7 @@ alias path='echo -e ${PATH//:/\\n}'
 alias wd='nmcli radio wifi off'
 alias wu='nmcli radio wifi on'
 # Wifi network
-alias wifijohnsen='nmcli c up johnsen'
+alias wifijohnsen='nmcli c up johnsen && ufst-ned --apps'
 alias wifikoncern='nmcli c up koncern-wifi'
 
 # UFST VPN with Teams- and Outlook-PWA's
