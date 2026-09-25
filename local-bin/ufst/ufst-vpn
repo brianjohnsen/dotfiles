@@ -70,6 +70,7 @@ Brug: ufst-vpn {op|ned|status} [--apps] [--interaktiv]
   status  Vis tunnelens tilstand: adresse, ruter, DNS
 
   --apps         Start (op) eller luk (ned) UFST-PWA'erne: $navne.
+                 ned lukker også åbne Citrix-sessioner.
                  Uden flaget røres ingen vinduer.
   --interaktiv   Tast selv både kodeord og MFA-kode (fallback hvis den
                  automatiske indfødning driller)
@@ -203,6 +204,14 @@ luk_apps() {
 
     [[ -n $oprindeligt ]] && xdotool windowactivate --sync "$oprindeligt" 2>/dev/null
     return 0
+}
+
+# Citrix er rigtige processer (én wfica pr. session), så her er pkill det
+# rigtige — ingen vindues-dans som for PWA'erne. Daemons får lov at leve.
+luk_citrix() {
+    pgrep -f '^/opt/Citrix/ICAClient/wfica' >/dev/null || return 0
+    pkill -TERM -f '^/opt/Citrix/ICAClient/wfica'
+    echo "» lukker Citrix"
 }
 
 cmd_status() {
@@ -366,7 +375,7 @@ cmd_ned() {
     # Før tunnelen ryger, så de ikke sidder og hamrer på en forbindelse der
     # er ved at forsvinde. Også hvis VPN'en slet ikke kørte — flaget skal
     # gøre det, det siger.
-    [[ -n $apps ]] && luk_apps
+    [[ -n $apps ]] && { luk_apps; luk_citrix; }
 
     if ! is_up; then
         echo "VPN kører ikke."

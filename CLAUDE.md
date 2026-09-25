@@ -79,9 +79,11 @@ Store the seed exactly as Microsoft displays it; `ufst-vpn` prepends the `base32
 
 `--apps` on `ufst-op`/`ufst-ned` starts and closes the Teams and Outlook PWAs
 alongside the tunnel. It is opt-in: without the flag neither command touches a
-window. The `ufstop`/`ufstned` aliases (no hyphen, so they sit next to the
-hyphenated scripts without shadowing them) are the everyday form that passes
-`--apps`. The app-ids live in the `UFST_APPS` array in `ufst-vpn`.
+window. The `opufstapps`/`nedufstapps` aliases are the everyday form that passes
+`--apps`, and `wifijohnsen` runs `ufst-ned --apps` after switching to the home
+network. The app-ids live in the `UFST_APPS` array in `ufst-vpn`.
+`ned --apps` also closes open Citrix sessions — those are real processes (one
+`wfica` each), so a plain `pkill` on `wfica` is fine there.
 
 The handling is window-based, not process-based, and has to be: Chrome runs no
 process per PWA — `google-chrome --app-id=…` hands the launch to the running
