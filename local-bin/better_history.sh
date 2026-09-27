@@ -42,8 +42,6 @@ shopt -s histappend
 shopt -s cmdhist
 # save multi-line commands to the history with embedded newlines
 shopt -s lithist
-# After each command, append to the history file and reread it
-export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
 # <<< better_history <<<
 EOF
 
