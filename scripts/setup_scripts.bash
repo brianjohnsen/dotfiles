@@ -14,3 +14,9 @@ mkdir -p "$HOME/.local/bin"
 for script in "$HOME"/.dotfiles/local-bin/ufst/ufst-*; do
     ln -sf "$script" "$HOME/.local/bin/$(basename "$script")"
 done
+
+# ufst-op/ufst-ned without a sudo prompt. Copied, not symlinked: sudo ignores
+# files in sudoers.d that aren't owned by root. visudo first, since a broken
+# sudoers file locks sudo out entirely.
+sudo visudo -cf "$HOME/.dotfiles/sudoers/ufst-vpn"
+sudo install -m 440 -o root -g root "$HOME/.dotfiles/sudoers/ufst-vpn" /etc/sudoers.d/ufst-vpn

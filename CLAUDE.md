@@ -75,6 +75,8 @@ Scripts for Brian's work at UFST/SKAT, symlinked into `~/.local/bin/` (already o
 
 Store the seed exactly as Microsoft displays it; `ufst-vpn` prepends the `base32:` prefix that openconnect requires. Without that prefix openconnect reads the string as raw bytes and generates wrong codes with no error — just a login that gets rejected.
 
+`sudoers/ufst-vpn` (copied to `/etc/sudoers.d/` by `scripts/setup_scripts.bash`) makes `openconnect` and `pkill -SIGINT -x openconnect` NOPASSWD, so `ufst-op`/`ufst-ned` never prompt. Storing the sudo password on disk was rejected: it leaks the login password itself. The rule is still effectively root for the user (openconnect runs `--script` as root).
+
 `ufst-totp` prints the current code from the same seed. It exists to confirm the seed during enrolment, and as a fallback for typing the code by hand if openconnect ever fails to recognise the ASA's second form field as a token field.
 
 `--apps` on `ufst-op`/`ufst-ned` starts and closes the Teams and Outlook PWAs

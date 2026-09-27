@@ -263,7 +263,9 @@ cmd_op() {
     # Godkend sudo FØRST. Ellers kommer fingeraftryks-prompten efter at
     # MFA-koden er tastet, og en langsom godkendelse kan nå at lade den
     # 30-sekunders TOTP-kode udløbe inden den sendes.
-    if ! sudo -v; then
+    # Er sudoers/ufst-vpn installeret, er der intet at godkende — og sudo -v
+    # ville prompte alligevel, da den ikke kigger på NOPASSWD for én kommando.
+    if ! sudo -n -l /usr/sbin/openconnect >/dev/null 2>&1 && ! sudo -v; then
         echo "sudo-godkendelse fejlede." >&2
         return 1
     fi

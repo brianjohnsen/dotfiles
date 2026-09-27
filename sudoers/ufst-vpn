@@ -1,0 +1,3 @@
+# Installeres i /etc/sudoers.d/ af scripts/setup_scripts.bash.
+# Lader ufst-op/ufst-ned køre uden sudo-prompt.
+johnsen ALL=(root) NOPASSWD: /usr/sbin/openconnect, /usr/bin/pkill -SIGINT -x openconnect
